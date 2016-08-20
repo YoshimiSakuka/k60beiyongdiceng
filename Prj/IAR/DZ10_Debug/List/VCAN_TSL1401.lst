@@ -1,0 +1,894 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        26/Jul/2016  23:31:20
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\src\VCAN_TSL1401.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\src\VCAN_TSL1401.c -D
+#        DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\VCAN_TSL1401.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\VCAN_TSL1401.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\src\VCAN_TSL1401.c
+      1          /*!
+      2           *     COPYRIGHT NOTICE
+      3           *     Copyright (c) 2013,山外科技
+      4           *     All rights reserved.
+      5           *     技术讨论：山外论坛 http://www.vcan123.com
+      6           *
+      7           *     除注明出处外，以下所有内容版权均属山外科技所有，未经允许，不得用于商业用途，
+      8           *     修改内容时必须保留山外科技的版权声明。
+      9           *
+     10           * @file       VCAN_TSL1401.c
+     11           * @brief      线阵CCD函数库
+     12           * @author     山外科技
+     13           * @version    v5.0
+     14           * @date       2014-01-04
+     15           */
+     16          
+     17          #include "common.h"
+     18          #include "math.h"
+     19          #include <stdarg.h>
+     20          #include "MK60_port.h"
+     21          #include "MK60_gpio.h"
+     22          #include "MK60_adc.h"
+     23          #include "MK60_pit.h"
+     24          #include "VCAN_TSL1401.h"
+     25          
+     26          
+
+   \                                 In section .bss, align 1
+     27          static volatile tsl1401_status_e  tsl1401_flag = tsl1401_noint;
+   \                     tsl1401_flag:
+   \   00000000                      DS8 1
+
+   \                                 In section .bss, align 4
+     28          static volatile uint32            tsl1401_time;
+   \                     tsl1401_time:
+   \   00000000                      DS8 4
+     29          
+     30          
+     31          static void tsl1401_restet();
+     32          static void tsl1401_delay(volatile uint32 time );
+     33          static void tsl1401_gather(void);
+     34          
+     35          //配置CCD管脚
+     36          //                          CCD1            CCD2        CCD3
+     37          
+     38          #if 1             //宏条件编译选择不同的信号类型
+
+   \                                 In section .data, align 4
+     39          ADCn_Ch_e   tsl1401_ch[] = {ADC0_DP1,     ADC0_DP0,    ADC1_DP1};       //CCD所用的 ADC通道(原始信号)
+   \                     tsl1401_ch:
+   \   00000000   0x01 0x00          DC8 1, 0, 33, 0
+   \              0x21 0x00    
+     40          #else
+     41          ADCn_Ch_e   tsl1401_ch[] = {ADC0_DM1,     ADC0_DM0,    ADC1_DM1};       //CCD所用的 ADC通道(放大信号)
+     42          #endif
+
+   \                                 In section .data, align 4
+     43          PTXn_e      tsl1401_si[] = {PTE6 ,        PTE8 ,       PTE10};          //CCD所用的 SI管脚
+   \                     tsl1401_si:
+   \   00000000   0x86 0x88          DC8 134, 136, 138, 0
+   \              0x8A 0x00    
+
+   \                                 In section .data, align 4
+     44          PTXn_e      tsl1401_clk[] = {PTE7 ,        PTE9 ,       PTE12};         //CCD所用的 SI管脚
+   \                     tsl1401_clk:
+   \   00000000   0x87 0x89          DC8 135, 137, 140, 0
+   \              0x8C 0x00    
+
+   \                                 In section .data, align 4
+     45          PTXn_e      tsl1401_led[] = {PTA8 ,        PTA9 ,       PTD15};         //CCD 补光 所用的 LED_EN 管脚
+   \                     tsl1401_led:
+   \   00000000   0x08 0x09          DC8 8, 9, 111, 0
+   \              0x6F 0x00    
+     46          
+     47          //CCD 采集回来的存储空间指针数组
+
+   \                                 In section .bss, align 4
+     48          uint8 *tsl1401_addr[TSL1401_MAX] = {0};                                 //CCD 采集图像的地址数组
+   \                     tsl1401_addr:
+   \   00000000                      DS8 12
+     49          
+     50          //全部CCD的SI管脚输出数据
+
+   \                                 In section .text, align 2, keep-with-next
+     51          void tsl1401_si_out(uint8 data)
+     52          {
+   \                     tsl1401_si_out: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     53              uint8   i = TSL1401_MAX;
+   \   00000004   0x2503             MOVS     R5,#+3
+     54          
+     55              ASSERT(data < 2);
+   \   00000006   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000008   0x2C02             CMP      R4,#+2
+   \   0000000A   0xDB03             BLT.N    ??tsl1401_si_out_0
+   \   0000000C   0x2137             MOVS     R1,#+55
+   \   0000000E   0x....             LDR.N    R0,??DataTable10
+   \   00000010   0x.... 0x....      BL       assert_failed
+     56          
+     57              while(i--)
+   \                     ??tsl1401_si_out_0: (+1)
+   \   00000014   0x0028             MOVS     R0,R5
+   \   00000016   0x1E45             SUBS     R5,R0,#+1
+   \   00000018   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001A   0x2800             CMP      R0,#+0
+   \   0000001C   0xD007             BEQ.N    ??tsl1401_si_out_1
+     58              {
+     59                  gpio_set(tsl1401_si[i], data);
+   \   0000001E   0x0021             MOVS     R1,R4
+   \   00000020   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   00000022   0x....             LDR.N    R0,??DataTable10_1
+   \   00000024   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000026   0x5C28             LDRB     R0,[R5, R0]
+   \   00000028   0x.... 0x....      BL       gpio_set
+   \   0000002C   0xE7F2             B.N      ??tsl1401_si_out_0
+     60              }
+     61          }
+   \                     ??tsl1401_si_out_1: (+1)
+   \   0000002E   0xBD31             POP      {R0,R4,R5,PC}    ;; return
+     62          
+     63          //全部CCD的CLK管脚输出数据
+
+   \                                 In section .text, align 2, keep-with-next
+     64          void tsl1401_clk_out(uint8 data)
+     65          {
+   \                     tsl1401_clk_out: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     66              uint8   i = TSL1401_MAX;
+   \   00000004   0x2503             MOVS     R5,#+3
+     67          
+     68              ASSERT(data < 2);
+   \   00000006   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000008   0x2C02             CMP      R4,#+2
+   \   0000000A   0xDB03             BLT.N    ??tsl1401_clk_out_0
+   \   0000000C   0x2144             MOVS     R1,#+68
+   \   0000000E   0x....             LDR.N    R0,??DataTable10
+   \   00000010   0x.... 0x....      BL       assert_failed
+     69          
+     70              while(i--)
+   \                     ??tsl1401_clk_out_0: (+1)
+   \   00000014   0x0028             MOVS     R0,R5
+   \   00000016   0x1E45             SUBS     R5,R0,#+1
+   \   00000018   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001A   0x2800             CMP      R0,#+0
+   \   0000001C   0xD007             BEQ.N    ??tsl1401_clk_out_1
+     71              {
+     72                  gpio_set(tsl1401_clk[i], data);
+   \   0000001E   0x0021             MOVS     R1,R4
+   \   00000020   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   00000022   0x....             LDR.N    R0,??DataTable10_2
+   \   00000024   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000026   0x5C28             LDRB     R0,[R5, R0]
+   \   00000028   0x.... 0x....      BL       gpio_set
+   \   0000002C   0xE7F2             B.N      ??tsl1401_clk_out_0
+     73              }
+     74          }
+   \                     ??tsl1401_clk_out_1: (+1)
+   \   0000002E   0xBD31             POP      {R0,R4,R5,PC}    ;; return
+     75          
+     76          //tsl1401,线性CCD初始化，time为曝光时间，单位与 TSL1401_INT_TIME 的设置一致，初始化后必须调用tsl1401_set_addrs 来设置存储地址（或者先设置存储图像地址）
+
+   \                                 In section .text, align 2, keep-with-next
+     77          void tsl1401_init(uint32 time)
+     78          {
+   \                     tsl1401_init: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     79              uint8 i = TSL1401_MAX;
+   \   00000004   0x2503             MOVS     R5,#+3
+     80          
+     81              while(i)
+   \                     ??tsl1401_init_0: (+1)
+   \   00000006   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000008   0x2D00             CMP      R5,#+0
+   \   0000000A   0xD014             BEQ.N    ??tsl1401_init_1
+     82              {
+     83                  i--;
+   \   0000000C   0x1E6D             SUBS     R5,R5,#+1
+     84                  adc_init(tsl1401_ch[i]); //初始化 CCD 所用的 ADC通道
+   \   0000000E   0x....             LDR.N    R0,??DataTable10_3
+   \   00000010   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000012   0x5C28             LDRB     R0,[R5, R0]
+   \   00000014   0x.... 0x....      BL       adc_init
+     85          
+     86                  //初始化 CCD 的控制管脚 CLK 和 SI
+     87                  gpio_init (tsl1401_clk[i], GPO, 0);
+   \   00000018   0x2200             MOVS     R2,#+0
+   \   0000001A   0x2101             MOVS     R1,#+1
+   \   0000001C   0x....             LDR.N    R0,??DataTable10_2
+   \   0000001E   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000020   0x5C28             LDRB     R0,[R5, R0]
+   \   00000022   0x.... 0x....      BL       gpio_init
+     88                  gpio_init (tsl1401_si[i] , GPO, 0);
+   \   00000026   0x2200             MOVS     R2,#+0
+   \   00000028   0x2101             MOVS     R1,#+1
+   \   0000002A   0x....             LDR.N    R0,??DataTable10_1
+   \   0000002C   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   0000002E   0x5C28             LDRB     R0,[R5, R0]
+   \   00000030   0x.... 0x....      BL       gpio_init
+   \   00000034   0xE7E7             B.N      ??tsl1401_init_0
+     89              }
+     90          
+     91              tsl1401_time = time;
+   \                     ??tsl1401_init_1: (+1)
+   \   00000036   0x....             LDR.N    R0,??DataTable10_4
+   \   00000038   0x6004             STR      R4,[R0, #+0]
+     92              TSL1401_INT_TIME(tsl1401_time);         //  设置中断时间
+   \   0000003A   0x....             LDR.N    R0,??DataTable10_4
+   \   0000003C   0x6800             LDR      R0,[R0, #+0]
+   \   0000003E   0x....             LDR.N    R1,??DataTable10_5
+   \   00000040   0x6809             LDR      R1,[R1, #+0]
+   \   00000042   0xFB01 0xF100      MUL      R1,R1,R0
+   \   00000046   0x2000             MOVS     R0,#+0
+   \   00000048   0x.... 0x....      BL       pit_init
+     93          
+     94              tsl1401_restet();                       //  丢弃第一帧的数据（乱的）
+   \   0000004C   0x.... 0x....      BL       tsl1401_restet
+     95          }
+   \   00000050   0xBD31             POP      {R0,R4,R5,PC}    ;; return
+     96          
+     97          //设置采集图像的地址
+     98          //num 为 TSL1401_MAX 时，设置全部地址，否则设置指定的地址
+
+   \                                 In section .text, align 2, keep-with-next
+     99          void tsl1401_set_addrs(TSL1401_e num, uint8 *addr, ... )
+    100          {
+   \                     tsl1401_set_addrs: (+1)
+   \   00000000   0xB40C             PUSH     {R2,R3}
+   \   00000002   0xB538             PUSH     {R3-R5,LR}
+   \   00000004   0x0004             MOVS     R4,R0
+   \   00000006   0x000D             MOVS     R5,R1
+    101              ASSERT(num <= TSL1401_MAX);
+   \   00000008   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000000A   0x2C04             CMP      R4,#+4
+   \   0000000C   0xDB03             BLT.N    ??tsl1401_set_addrs_0
+   \   0000000E   0x2165             MOVS     R1,#+101
+   \   00000010   0x....             LDR.N    R0,??DataTable10
+   \   00000012   0x.... 0x....      BL       assert_failed
+    102          
+    103              va_list ap;                                 //创建栈指针ap
+    104              uint8_t *value;
+    105              uint8_t n = 0;
+   \                     ??tsl1401_set_addrs_0: (+1)
+   \   00000016   0x2200             MOVS     R2,#+0
+    106          
+    107              if(num < TSL1401_MAX)
+   \   00000018   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000001A   0x2C03             CMP      R4,#+3
+   \   0000001C   0xDA04             BGE.N    ??tsl1401_set_addrs_1
+    108              {
+    109                  tsl1401_addr[num] = addr;
+   \   0000001E   0x....             LDR.N    R3,??DataTable10_6
+   \   00000020   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000022   0xF843 0x5024      STR      R5,[R3, R4, LSL #+2]
+   \   00000026   0xE013             B.N      ??tsl1401_set_addrs_2
+    110              }
+    111              else if(num == TSL1401_MAX)
+   \                     ??tsl1401_set_addrs_1: (+1)
+   \   00000028   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000002A   0x2C03             CMP      R4,#+3
+   \   0000002C   0xD110             BNE.N    ??tsl1401_set_addrs_2
+    112              {
+    113                  va_start(ap, addr);                         //获取可变参数列表的第一个参数的地址
+   \   0000002E   0xAB04             ADD      R3,SP,#+16
+   \   00000030   0x0018             MOVS     R0,R3
+    114                  value = addr;
+   \   00000032   0x0029             MOVS     R1,R5
+    115                  while(num--)
+   \                     ??tsl1401_set_addrs_3: (+1)
+   \   00000034   0x0023             MOVS     R3,R4
+   \   00000036   0x1E5C             SUBS     R4,R3,#+1
+   \   00000038   0xB2DB             UXTB     R3,R3            ;; ZeroExt  R3,R3,#+24,#+24
+   \   0000003A   0x2B00             CMP      R3,#+0
+   \   0000003C   0xD008             BEQ.N    ??tsl1401_set_addrs_2
+    116                  {
+    117                      tsl1401_addr[n++] = value;
+   \   0000003E   0x....             LDR.N    R3,??DataTable10_6
+   \   00000040   0xB2D2             UXTB     R2,R2            ;; ZeroExt  R2,R2,#+24,#+24
+   \   00000042   0xF843 0x1022      STR      R1,[R3, R2, LSL #+2]
+   \   00000046   0x1C52             ADDS     R2,R2,#+1
+    118                      value = va_arg(ap, uint8_t * );             //获取可变参数的当前参数，返回指定类型并将指针指向下一参数
+   \   00000048   0x6803             LDR      R3,[R0, #+0]
+   \   0000004A   0x1D00             ADDS     R0,R0,#+4
+   \   0000004C   0x0019             MOVS     R1,R3
+   \   0000004E   0xE7F1             B.N      ??tsl1401_set_addrs_3
+    119                  }
+    120          
+    121                  va_end(ap);                                 //清空va_list可变参数列表
+    122              }
+    123          }
+   \                     ??tsl1401_set_addrs_2: (+1)
+   \   00000050   0xBC31             POP      {R0,R4,R5}
+   \   00000052   0xF85D 0xFB0C      LDR      PC,[SP], #+12    ;; return
+    124          
+    125          
+    126          //num 为 TSL1401_MAX 时，开启全部LED，否则开启对应的 LED
+
+   \                                 In section .text, align 2, keep-with-next
+    127          void tsl1401_led_en(TSL1401_e num)
+    128          {
+   \                     tsl1401_led_en: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    129              ASSERT(num <= TSL1401_MAX);
+   \   00000004   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000006   0x2C04             CMP      R4,#+4
+   \   00000008   0xDB03             BLT.N    ??tsl1401_led_en_0
+   \   0000000A   0x2181             MOVS     R1,#+129
+   \   0000000C   0x....             LDR.N    R0,??DataTable10
+   \   0000000E   0x.... 0x....      BL       assert_failed
+    130          
+    131              if(num < TSL1401_MAX)
+   \                     ??tsl1401_led_en_0: (+1)
+   \   00000012   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000014   0x2C03             CMP      R4,#+3
+   \   00000016   0xDA07             BGE.N    ??tsl1401_led_en_1
+    132              {
+    133                  gpio_init(tsl1401_led[num], GPO, 0);
+   \   00000018   0x2200             MOVS     R2,#+0
+   \   0000001A   0x2101             MOVS     R1,#+1
+   \   0000001C   0x....             LDR.N    R0,??DataTable10_7
+   \   0000001E   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000020   0x5C20             LDRB     R0,[R4, R0]
+   \   00000022   0x.... 0x....      BL       gpio_init
+   \   00000026   0xE00F             B.N      ??tsl1401_led_en_2
+    134              }
+    135              else if(num == TSL1401_MAX)
+   \                     ??tsl1401_led_en_1: (+1)
+   \   00000028   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000002A   0x2C03             CMP      R4,#+3
+   \   0000002C   0xD10C             BNE.N    ??tsl1401_led_en_2
+    136              {
+    137          
+    138                  while(num--)
+   \                     ??tsl1401_led_en_3: (+1)
+   \   0000002E   0x0020             MOVS     R0,R4
+   \   00000030   0x1E44             SUBS     R4,R0,#+1
+   \   00000032   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000034   0x2800             CMP      R0,#+0
+   \   00000036   0xD007             BEQ.N    ??tsl1401_led_en_2
+    139                  {
+    140                      gpio_init(tsl1401_led[num], GPO, 0);
+   \   00000038   0x2200             MOVS     R2,#+0
+   \   0000003A   0x2101             MOVS     R1,#+1
+   \   0000003C   0x....             LDR.N    R0,??DataTable10_7
+   \   0000003E   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000040   0x5C20             LDRB     R0,[R4, R0]
+   \   00000042   0x.... 0x....      BL       gpio_init
+   \   00000046   0xE7F2             B.N      ??tsl1401_led_en_3
+    141                  }
+    142              }
+    143          }
+   \                     ??tsl1401_led_en_2: (+1)
+   \   00000048   0xBD10             POP      {R4,PC}          ;; return
+    144          
+    145          //num 为 TSL1401_MAX 时，开启全部LED，否则开启对应的 LED
+
+   \                                 In section .text, align 2, keep-with-next
+    146          void tsl1401_led_dis(TSL1401_e num)
+    147          {
+   \                     tsl1401_led_dis: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    148              ASSERT(num <= TSL1401_MAX);
+   \   00000004   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000006   0x2C04             CMP      R4,#+4
+   \   00000008   0xDB03             BLT.N    ??tsl1401_led_dis_0
+   \   0000000A   0x2194             MOVS     R1,#+148
+   \   0000000C   0x....             LDR.N    R0,??DataTable10
+   \   0000000E   0x.... 0x....      BL       assert_failed
+    149          
+    150              if(num < TSL1401_MAX)
+   \                     ??tsl1401_led_dis_0: (+1)
+   \   00000012   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000014   0x2C03             CMP      R4,#+3
+   \   00000016   0xDA07             BGE.N    ??tsl1401_led_dis_1
+    151              {
+    152                  gpio_init(tsl1401_led[num], GPI, 1);
+   \   00000018   0x2201             MOVS     R2,#+1
+   \   0000001A   0x2100             MOVS     R1,#+0
+   \   0000001C   0x....             LDR.N    R0,??DataTable10_7
+   \   0000001E   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000020   0x5C20             LDRB     R0,[R4, R0]
+   \   00000022   0x.... 0x....      BL       gpio_init
+   \   00000026   0xE00F             B.N      ??tsl1401_led_dis_2
+    153              }
+    154              else if(num == TSL1401_MAX)
+   \                     ??tsl1401_led_dis_1: (+1)
+   \   00000028   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000002A   0x2C03             CMP      R4,#+3
+   \   0000002C   0xD10C             BNE.N    ??tsl1401_led_dis_2
+    155              {
+    156          
+    157                  while(num--)
+   \                     ??tsl1401_led_dis_3: (+1)
+   \   0000002E   0x0020             MOVS     R0,R4
+   \   00000030   0x1E44             SUBS     R4,R0,#+1
+   \   00000032   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000034   0x2800             CMP      R0,#+0
+   \   00000036   0xD007             BEQ.N    ??tsl1401_led_dis_2
+    158                  {
+    159                      gpio_init(tsl1401_led[num], GPI, 1);
+   \   00000038   0x2201             MOVS     R2,#+1
+   \   0000003A   0x2100             MOVS     R1,#+0
+   \   0000003C   0x....             LDR.N    R0,??DataTable10_7
+   \   0000003E   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000040   0x5C20             LDRB     R0,[R4, R0]
+   \   00000042   0x.... 0x....      BL       gpio_init
+   \   00000046   0xE7F2             B.N      ??tsl1401_led_dis_3
+    160                  }
+    161              }
+    162          }
+   \                     ??tsl1401_led_dis_2: (+1)
+   \   00000048   0xBD10             POP      {R4,PC}          ;; return
+    163          
+    164          //tsl1401,线性CCD采集图像
+
+   \                                 In section .text, align 2, keep-with-next
+    165          void tsl1401_get_img(void)
+    166          {
+    167              tsl1401_flag = tsl1401_start;           //启动采集
+   \                     tsl1401_get_img: (+1)
+   \   00000000   0x2001             MOVS     R0,#+1
+   \   00000002   0x....             LDR.N    R1,??DataTable10_8
+   \   00000004   0x7008             STRB     R0,[R1, #+0]
+    168              while(tsl1401_flag != tsl1401_finish);  //等待采集完成
+   \                     ??tsl1401_get_img_0: (+1)
+   \   00000006   0x....             LDR.N    R0,??DataTable10_8
+   \   00000008   0x7800             LDRB     R0,[R0, #+0]
+   \   0000000A   0x2802             CMP      R0,#+2
+   \   0000000C   0xD1FB             BNE.N    ??tsl1401_get_img_0
+    169          }
+   \   0000000E   0x4770             BX       LR               ;; return
+    170          
+    171          //获取 tsl1401,线性CCD 曝光时间
+
+   \                                 In section .text, align 2, keep-with-next
+    172          uint32 tsl1401_get_time(void)
+    173          {
+    174              return tsl1401_time;
+   \                     tsl1401_get_time: (+1)
+   \   00000000   0x....             LDR.N    R0,??DataTable10_4
+   \   00000002   0x6800             LDR      R0,[R0, #+0]
+   \   00000004   0x4770             BX       LR               ;; return
+    175          }
+    176          
+    177          //设置 tsl1401,线性CCD 曝光时间
+
+   \                                 In section .text, align 2, keep-with-next
+    178          void tsl1401_set_time(uint32 time)
+    179          {
+   \                     tsl1401_set_time: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    180              tsl1401_time = time;
+   \   00000004   0x....             LDR.N    R0,??DataTable10_4
+   \   00000006   0x6004             STR      R4,[R0, #+0]
+    181              TSL1401_INT_TIME(tsl1401_time);         //  设置中断时间
+   \   00000008   0x....             LDR.N    R0,??DataTable10_4
+   \   0000000A   0x6800             LDR      R0,[R0, #+0]
+   \   0000000C   0x....             LDR.N    R1,??DataTable10_5
+   \   0000000E   0x6809             LDR      R1,[R1, #+0]
+   \   00000010   0xFB01 0xF100      MUL      R1,R1,R0
+   \   00000014   0x2000             MOVS     R0,#+0
+   \   00000016   0x.... 0x....      BL       pit_init
+    182          }
+   \   0000001A   0xBD10             POP      {R4,PC}          ;; return
+    183          
+    184          //放入定时中断里，以便于定时复位曝光时间
+
+   \                                 In section .text, align 2, keep-with-next
+    185          void tsl1401_time_isr()
+    186          {
+   \                     tsl1401_time_isr: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+    187              //只判断是否开始采集和是否采集完成
+    188              if(tsl1401_flag == tsl1401_start)
+   \   00000002   0x....             LDR.N    R0,??DataTable10_8
+   \   00000004   0x7800             LDRB     R0,[R0, #+0]
+   \   00000006   0x2801             CMP      R0,#+1
+   \   00000008   0xD105             BNE.N    ??tsl1401_time_isr_0
+    189              {
+    190                  tsl1401_gather();
+   \   0000000A   0x.... 0x....      BL       tsl1401_gather
+    191                  tsl1401_flag = tsl1401_finish;
+   \   0000000E   0x2002             MOVS     R0,#+2
+   \   00000010   0x....             LDR.N    R1,??DataTable10_8
+   \   00000012   0x7008             STRB     R0,[R1, #+0]
+   \   00000014   0xE001             B.N      ??tsl1401_time_isr_1
+    192              }
+    193              else
+    194              {
+    195                  tsl1401_restet();                   // 复位
+   \                     ??tsl1401_time_isr_0: (+1)
+   \   00000016   0x.... 0x....      BL       tsl1401_restet
+    196              }
+    197          }
+   \                     ??tsl1401_time_isr_1: (+1)
+   \   0000001A   0xBD01             POP      {R0,PC}          ;; return
+    198          
+
+   \                                 In section .text, align 2, keep-with-next
+    199          void tsl1401_delay( uint32 time )
+    200          {
+   \                     tsl1401_delay: (+1)
+   \   00000000   0xB081             SUB      SP,SP,#+4
+    201              volatile uint32 i = time;
+   \   00000002   0x9000             STR      R0,[SP, #+0]
+    202          
+    203              while(i--);
+   \                     ??tsl1401_delay_0: (+1)
+   \   00000004   0x9900             LDR      R1,[SP, #+0]
+   \   00000006   0x1E4A             SUBS     R2,R1,#+1
+   \   00000008   0x9200             STR      R2,[SP, #+0]
+   \   0000000A   0x2900             CMP      R1,#+0
+   \   0000000C   0xD1FA             BNE.N    ??tsl1401_delay_0
+    204          }
+   \   0000000E   0xB001             ADD      SP,SP,#+4
+   \   00000010   0x4770             BX       LR               ;; return
+    205          
+    206          
+    207          //采集图像
+
+   \                                 In section .text, align 2, keep-with-next
+    208          void tsl1401_gather(void)
+    209          {
+   \                     tsl1401_gather: (+1)
+   \   00000000   0xB570             PUSH     {R4-R6,LR}
+    210          #define TSL1401_TIME   10   //延时时间
+    211          
+    212              uint8_t n = TSL1401_SIZE, k = 0;
+   \   00000002   0x2580             MOVS     R5,#+128
+   \   00000004   0x2400             MOVS     R4,#+0
+    213              uint8_t i;
+    214          
+    215              tsl1401_clk_out(0);             //CLK = 0
+   \   00000006   0x2000             MOVS     R0,#+0
+   \   00000008   0x.... 0x....      BL       tsl1401_clk_out
+    216              tsl1401_delay(TSL1401_TIME);
+   \   0000000C   0x200A             MOVS     R0,#+10
+   \   0000000E   0x.... 0x....      BL       tsl1401_delay
+    217              tsl1401_si_out(1);              //SI  = 1
+   \   00000012   0x2001             MOVS     R0,#+1
+   \   00000014   0x.... 0x....      BL       tsl1401_si_out
+    218              tsl1401_delay(TSL1401_TIME);
+   \   00000018   0x200A             MOVS     R0,#+10
+   \   0000001A   0x.... 0x....      BL       tsl1401_delay
+    219              tsl1401_clk_out(1);             //CLK = 1
+   \   0000001E   0x2001             MOVS     R0,#+1
+   \   00000020   0x.... 0x....      BL       tsl1401_clk_out
+    220              tsl1401_delay(TSL1401_TIME);
+   \   00000024   0x200A             MOVS     R0,#+10
+   \   00000026   0x.... 0x....      BL       tsl1401_delay
+    221          
+    222              tsl1401_si_out(0);              //SI  = 0
+   \   0000002A   0x2000             MOVS     R0,#+0
+   \   0000002C   0x.... 0x....      BL       tsl1401_si_out
+    223              tsl1401_delay(TSL1401_TIME);
+   \   00000030   0x200A             MOVS     R0,#+10
+   \   00000032   0x.... 0x....      BL       tsl1401_delay
+    224          
+    225              while(n--)
+   \                     ??tsl1401_gather_0: (+1)
+   \   00000036   0x0028             MOVS     R0,R5
+   \   00000038   0x1E45             SUBS     R5,R0,#+1
+   \   0000003A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000003C   0x2800             CMP      R0,#+0
+   \   0000003E   0xD01E             BEQ.N    ??tsl1401_gather_1
+    226              {
+    227          
+    228                  tsl1401_clk_out(0);        //CLK = 0
+   \   00000040   0x2000             MOVS     R0,#+0
+   \   00000042   0x.... 0x....      BL       tsl1401_clk_out
+    229          
+    230                  i = TSL1401_MAX;
+   \   00000046   0x2003             MOVS     R0,#+3
+   \   00000048   0x0006             MOVS     R6,R0
+    231                  while(i--)
+   \                     ??tsl1401_gather_2: (+1)
+   \   0000004A   0x0030             MOVS     R0,R6
+   \   0000004C   0x1E46             SUBS     R6,R0,#+1
+   \   0000004E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000050   0x2800             CMP      R0,#+0
+   \   00000052   0xD00C             BEQ.N    ??tsl1401_gather_3
+    232                  {
+    233                      (tsl1401_addr[i])[k] = (uint8_t)adc_once(tsl1401_ch[i], ADC_8bit);
+   \   00000054   0x2100             MOVS     R1,#+0
+   \   00000056   0x....             LDR.N    R0,??DataTable10_3
+   \   00000058   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   0000005A   0x5C30             LDRB     R0,[R6, R0]
+   \   0000005C   0x.... 0x....      BL       adc_once
+   \   00000060   0x....             LDR.N    R1,??DataTable10_6
+   \   00000062   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   00000064   0xF851 0x1026      LDR      R1,[R1, R6, LSL #+2]
+   \   00000068   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000006A   0x5460             STRB     R0,[R4, R1]
+   \   0000006C   0xE7ED             B.N      ??tsl1401_gather_2
+    234                      //*img++ =  adc_once(ADC1_AD8, ADC_8bit);
+    235                  }
+    236          
+    237                  tsl1401_clk_out(1);        //CLK = 1
+   \                     ??tsl1401_gather_3: (+1)
+   \   0000006E   0x2001             MOVS     R0,#+1
+   \   00000070   0x.... 0x....      BL       tsl1401_clk_out
+    238                  tsl1401_delay(TSL1401_TIME);
+   \   00000074   0x200A             MOVS     R0,#+10
+   \   00000076   0x.... 0x....      BL       tsl1401_delay
+    239                  k++;
+   \   0000007A   0x1C64             ADDS     R4,R4,#+1
+   \   0000007C   0xE7DB             B.N      ??tsl1401_gather_0
+    240              }
+    241          #undef TSL1401_TIME
+    242          }
+   \                     ??tsl1401_gather_1: (+1)
+   \   0000007E   0xBD70             POP      {R4-R6,PC}       ;; return
+    243          
+    244          //用于调整曝光时间
+
+   \                                 In section .text, align 2, keep-with-next
+    245          void tsl1401_restet()
+    246          {
+   \                     tsl1401_restet: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+    247          #define TSL1401_RETIME   1
+    248          
+    249              uint8 n = TSL1401_SIZE;
+   \   00000002   0x2480             MOVS     R4,#+128
+    250          
+    251              tsl1401_clk_out(0);             //CLK = 0
+   \   00000004   0x2000             MOVS     R0,#+0
+   \   00000006   0x.... 0x....      BL       tsl1401_clk_out
+    252              tsl1401_delay(TSL1401_RETIME);
+   \   0000000A   0x2001             MOVS     R0,#+1
+   \   0000000C   0x.... 0x....      BL       tsl1401_delay
+    253              tsl1401_si_out(1);              //SI  = 1
+   \   00000010   0x2001             MOVS     R0,#+1
+   \   00000012   0x.... 0x....      BL       tsl1401_si_out
+    254              tsl1401_delay(TSL1401_RETIME);
+   \   00000016   0x2001             MOVS     R0,#+1
+   \   00000018   0x.... 0x....      BL       tsl1401_delay
+    255              tsl1401_clk_out(1);             //CLK = 1
+   \   0000001C   0x2001             MOVS     R0,#+1
+   \   0000001E   0x.... 0x....      BL       tsl1401_clk_out
+    256              tsl1401_delay(TSL1401_RETIME);
+   \   00000022   0x2001             MOVS     R0,#+1
+   \   00000024   0x.... 0x....      BL       tsl1401_delay
+    257          
+    258              tsl1401_si_out(0);              //SI  = 0
+   \   00000028   0x2000             MOVS     R0,#+0
+   \   0000002A   0x.... 0x....      BL       tsl1401_si_out
+    259              tsl1401_delay(TSL1401_RETIME);
+   \   0000002E   0x2001             MOVS     R0,#+1
+   \   00000030   0x.... 0x....      BL       tsl1401_delay
+    260          
+    261              while(n--)
+   \                     ??tsl1401_restet_0: (+1)
+   \   00000034   0x0020             MOVS     R0,R4
+   \   00000036   0x1E44             SUBS     R4,R0,#+1
+   \   00000038   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000003A   0x2800             CMP      R0,#+0
+   \   0000003C   0xD00C             BEQ.N    ??tsl1401_restet_1
+    262              {
+    263                  tsl1401_clk_out(0);             //CLK = 0
+   \   0000003E   0x2000             MOVS     R0,#+0
+   \   00000040   0x.... 0x....      BL       tsl1401_clk_out
+    264                  tsl1401_delay(TSL1401_RETIME);
+   \   00000044   0x2001             MOVS     R0,#+1
+   \   00000046   0x.... 0x....      BL       tsl1401_delay
+    265                  tsl1401_clk_out(1);             //CLK = 1
+   \   0000004A   0x2001             MOVS     R0,#+1
+   \   0000004C   0x.... 0x....      BL       tsl1401_clk_out
+    266                  tsl1401_delay(TSL1401_RETIME);
+   \   00000050   0x2001             MOVS     R0,#+1
+   \   00000052   0x.... 0x....      BL       tsl1401_delay
+   \   00000056   0xE7ED             B.N      ??tsl1401_restet_0
+    267              }
+    268          #undef TSL1401_RETIME
+    269          }
+   \                     ??tsl1401_restet_1: (+1)
+   \   00000058   0xBD10             POP      {R4,PC}          ;; return
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10:
+   \   00000000   0x........         DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_1:
+   \   00000000   0x........         DC32     tsl1401_si
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_2:
+   \   00000000   0x........         DC32     tsl1401_clk
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_3:
+   \   00000000   0x........         DC32     tsl1401_ch
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_4:
+   \   00000000   0x........         DC32     tsl1401_time
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_5:
+   \   00000000   0x........         DC32     bus_clk_khz
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_6:
+   \   00000000   0x........         DC32     tsl1401_addr
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_7:
+   \   00000000   0x........         DC32     tsl1401_led
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable10_8:
+   \   00000000   0x........         DC32     tsl1401_flag
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \   00000000   0x44 0x3A          DC8 44H, 3AH, 5CH, 53H, 74H, 75H, 64H, 79H
+   \              0x5C 0x53    
+   \              0x74 0x75    
+   \              0x64 0x79    
+   \   00000008   0x5C 0x32          DC8 5CH, 32H, 30H, 31H, 36H, 0B5H, 0E7H, 0D7H
+   \              0x30 0x31    
+   \              0x36 0xB5    
+   \              0xE7 0xD7    
+   \   00000010   0xD3 0xC9          DC8 0D3H, 0C9H, 0E8H, 0BCH, 0C6H, 0B4H, 0F3H, 0C8H
+   \              0xE8 0xBC    
+   \              0xC6 0xB4    
+   \              0xF3 0xC8    
+   \   00000018   0xFC 0x5C          DC8 0FCH, 5CH, 54H, 69H, 5CH, 0B5H, 0E7H, 0C8H
+   \              0x54 0x69    
+   \              0x5C 0xB5    
+   \              0xE7 0xC8    
+   \   00000020   0xFC 0xB1          DC8 0FCH, 0B1H, 0B8H, 0D3H, 0C3H, 0B5H, 0D7H, 0B2H
+   \              0xB8 0xD3    
+   \              0xC3 0xB5    
+   \              0xD7 0xB2    
+   \   00000028   0xE3 0x5C          DC8 0E3H, 5CH, 42H, 6FH, 61H, 72H, 64H, 5CH
+   \              0x42 0x6F    
+   \              0x61 0x72    
+   \              0x64 0x5C    
+   \   00000030   0x73 0x72          DC8 73H, 72H, 63H, 5CH, 56H, 43H, 41H, 4EH
+   \              0x63 0x5C    
+   \              0x56 0x43    
+   \              0x41 0x4E    
+   \   00000038   0x5F 0x54          DC8 5FH, 54H, 53H, 4CH, 31H, 34H, 30H, 31H
+   \              0x53 0x4C    
+   \              0x31 0x34    
+   \              0x30 0x31    
+   \   00000040   0x2E 0x63          DC8 2EH, 63H, 0
+   \              0x00         
+   \   00000043   0x00               DC8 0
+    270          
+    271          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   tsl1401_clk_out
+        16   -> assert_failed
+        16   -> gpio_set
+       4   tsl1401_delay
+      16   tsl1401_gather
+        16   -> adc_once
+        16   -> tsl1401_clk_out
+        16   -> tsl1401_delay
+        16   -> tsl1401_si_out
+       0   tsl1401_get_img
+       0   tsl1401_get_time
+      16   tsl1401_init
+        16   -> adc_init
+        16   -> gpio_init
+        16   -> pit_init
+        16   -> tsl1401_restet
+       8   tsl1401_led_dis
+         8   -> assert_failed
+         8   -> gpio_init
+       8   tsl1401_led_en
+         8   -> assert_failed
+         8   -> gpio_init
+       8   tsl1401_restet
+         8   -> tsl1401_clk_out
+         8   -> tsl1401_delay
+         8   -> tsl1401_si_out
+      24   tsl1401_set_addrs
+        24   -> assert_failed
+       8   tsl1401_set_time
+         8   -> pit_init
+      16   tsl1401_si_out
+        16   -> assert_failed
+        16   -> gpio_set
+       8   tsl1401_time_isr
+         8   -> tsl1401_gather
+         8   -> tsl1401_restet
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable10
+       4  ??DataTable10_1
+       4  ??DataTable10_2
+       4  ??DataTable10_3
+       4  ??DataTable10_4
+       4  ??DataTable10_5
+       4  ??DataTable10_6
+       4  ??DataTable10_7
+       4  ??DataTable10_8
+      68  ?_0
+      12  tsl1401_addr
+       4  tsl1401_ch
+       4  tsl1401_clk
+      48  tsl1401_clk_out
+      18  tsl1401_delay
+       1  tsl1401_flag
+     128  tsl1401_gather
+      16  tsl1401_get_img
+       6  tsl1401_get_time
+      82  tsl1401_init
+       4  tsl1401_led
+      74  tsl1401_led_dis
+      74  tsl1401_led_en
+      90  tsl1401_restet
+      86  tsl1401_set_addrs
+      28  tsl1401_set_time
+       4  tsl1401_si
+      48  tsl1401_si_out
+       4  tsl1401_time
+      28  tsl1401_time_isr
+
+ 
+  17 bytes in section .bss
+  16 bytes in section .data
+  68 bytes in section .rodata
+ 762 bytes in section .text
+ 
+ 762 bytes of CODE  memory
+  68 bytes of CONST memory
+  33 bytes of DATA  memory
+
+Errors: none
+Warnings: none

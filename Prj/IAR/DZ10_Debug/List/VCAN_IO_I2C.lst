@@ -1,0 +1,1094 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:33
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\Accessories\Driver\VCAN_IO_I2C.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\Accessories\Driver\VCAN_IO_I2C.c
+#        -D DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\VCAN_IO_I2C.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\VCAN_IO_I2C.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\Accessories\Driver\VCAN_IO_I2C.c
+      1          /* IOI2C.c file
+      2          功能：
+      3          提供I2C接口操作API 。
+      4          使用IO模拟方式
+      5          ------------------------------------
+      6           */
+      7          #include "VCAN_IO_I2C.h"
+      8          
+
+   \                                 In section .text, align 2, keep-with-next
+      9          static void IIC_delay(volatile uint16_t time)
+     10          {
+   \                     IIC_delay: (+1)
+   \   00000000   0xB401             PUSH     {R0}
+     11              while(time)
+   \                     ??IIC_delay_0: (+1)
+   \   00000002   0xF8BD 0x0000      LDRH     R0,[SP, #+0]
+   \   00000006   0x2800             CMP      R0,#+0
+   \   00000008   0xD005             BEQ.N    ??IIC_delay_1
+     12              {
+     13                  time--;
+   \   0000000A   0xF8BD 0x0000      LDRH     R0,[SP, #+0]
+   \   0000000E   0x1E40             SUBS     R0,R0,#+1
+   \   00000010   0xF8AD 0x0000      STRH     R0,[SP, #+0]
+   \   00000014   0xE7F5             B.N      ??IIC_delay_0
+     14              }
+     15          }
+   \                     ??IIC_delay_1: (+1)
+   \   00000016   0xB001             ADD      SP,SP,#+4
+   \   00000018   0x4770             BX       LR               ;; return
+     16            
+     17          /**************************实现函数********************************************
+     18          *函数原型:		void IIC_Init(void)
+     19          *功　　能:		初始化I2C对应的接口引脚。
+     20          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+     21          void IIC_Init(void)
+     22          {			
+   \                     IIC_Init: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     23              gpio_init  (PTD8, GPO, 1); //初始化SCL0
+   \   00000002   0x2201             MOVS     R2,#+1
+   \   00000004   0x2101             MOVS     R1,#+1
+   \   00000006   0x2068             MOVS     R0,#+104
+   \   00000008   0x.... 0x....      BL       gpio_init
+     24              gpio_init  (PTD9, GPO, 1); //初始化SDA0
+   \   0000000C   0x2201             MOVS     R2,#+1
+   \   0000000E   0x2101             MOVS     R1,#+1
+   \   00000010   0x2069             MOVS     R0,#+105
+   \   00000012   0x.... 0x....      BL       gpio_init
+     25              port_init_NoALT(PTD8,ODO | PULLUP);
+   \   00000016   0x2123             MOVS     R1,#+35
+   \   00000018   0x2068             MOVS     R0,#+104
+   \   0000001A   0x.... 0x....      BL       port_init_NoALT
+     26              port_init_NoALT(PTD9,ODO | PULLUP);
+   \   0000001E   0x2123             MOVS     R1,#+35
+   \   00000020   0x2069             MOVS     R0,#+105
+   \   00000022   0x.... 0x....      BL       port_init_NoALT
+     27          }
+   \   00000026   0xBD01             POP      {R0,PC}          ;; return
+     28          
+     29          /**************************实现函数********************************************
+     30          *函数原型:		void IIC_Start(void)
+     31          *功　　能:		产生IIC起始信号
+     32          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+     33          void IIC_Start(void)
+     34          {
+   \                     IIC_Start: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     35          	SDA_DDR_OUT();     
+   \   00000002   0x2001             MOVS     R0,#+1
+   \   00000004   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+     36          	SDA_H();	  	  
+   \   00000008   0x2001             MOVS     R0,#+1
+   \   0000000A   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   0000000C   0x6008             STR      R0,[R1, #+0]
+     37          	SCL_H();
+   \   0000000E   0x2001             MOVS     R0,#+1
+   \   00000010   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000012   0x6008             STR      R0,[R1, #+0]
+     38          	IIC_DELAY();
+   \   00000014   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000018   0x.... 0x....      BL       IIC_delay
+     39           	SDA_L();//START:when CLK is high,DATA change form high to low 
+   \   0000001C   0x2000             MOVS     R0,#+0
+   \   0000001E   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   00000020   0x6008             STR      R0,[R1, #+0]
+     40          	IIC_DELAY();
+   \   00000022   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000026   0x.... 0x....      BL       IIC_delay
+     41          	SCL_L();
+   \   0000002A   0x2000             MOVS     R0,#+0
+   \   0000002C   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000002E   0x6008             STR      R0,[R1, #+0]
+     42          }
+   \   00000030   0xBD01             POP      {R0,PC}          ;; return
+     43          
+     44          /**************************实现函数********************************************
+     45          *函数原型:		void IIC_Stop(void)
+     46          *功　　能:	    //产生IIC停止信号
+     47          *******************************************************************************/	  
+
+   \                                 In section .text, align 2, keep-with-next
+     48          void IIC_Stop(void)
+     49          {
+   \                     IIC_Stop: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     50          	SDA_DDR_OUT();
+   \   00000002   0x2001             MOVS     R0,#+1
+   \   00000004   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+     51          	SCL_L();
+   \   00000008   0x2000             MOVS     R0,#+0
+   \   0000000A   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000000C   0x6008             STR      R0,[R1, #+0]
+     52          	SDA_L();//STOP:when CLK is high DATA change form low to high
+   \   0000000E   0x2000             MOVS     R0,#+0
+   \   00000010   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   00000012   0x6008             STR      R0,[R1, #+0]
+     53           	IIC_DELAY();
+   \   00000014   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000018   0x.... 0x....      BL       IIC_delay
+     54          	SCL_H(); 
+   \   0000001C   0x2001             MOVS     R0,#+1
+   \   0000001E   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000020   0x6008             STR      R0,[R1, #+0]
+     55          	SDA_H();
+   \   00000022   0x2001             MOVS     R0,#+1
+   \   00000024   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   00000026   0x6008             STR      R0,[R1, #+0]
+     56          	IIC_DELAY();							   	
+   \   00000028   0xF44F 0x70C8      MOV      R0,#+400
+   \   0000002C   0x.... 0x....      BL       IIC_delay
+     57          }
+   \   00000030   0xBD01             POP      {R0,PC}          ;; return
+     58          
+     59          /**************************实现函数********************************************
+     60          *函数原型:		u8 IIC_Wait_Ack(void)
+     61          *功　　能:	    等待应答信号到来 
+     62          //返回值：1，接收应答失败
+     63          //        0，接收应答成功
+     64          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+     65          uint8 IIC_Wait_Ack(void)
+     66          {
+   \                     IIC_Wait_Ack: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+     67          	uint8 ucErrTime=0;
+   \   00000002   0x2400             MOVS     R4,#+0
+     68          	SDA_DDR_IN();     
+   \   00000004   0x2000             MOVS     R0,#+0
+   \   00000006   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   00000008   0x6008             STR      R0,[R1, #+0]
+     69          	SDA_H(); IIC_DELAY();	   
+   \   0000000A   0x2001             MOVS     R0,#+1
+   \   0000000C   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   0000000E   0x6008             STR      R0,[R1, #+0]
+   \   00000010   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000014   0x.... 0x....      BL       IIC_delay
+     70          	SCL_H(); IIC_DELAY();	 
+   \   00000018   0x2001             MOVS     R0,#+1
+   \   0000001A   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000001C   0x6008             STR      R0,[R1, #+0]
+   \   0000001E   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000022   0x.... 0x....      BL       IIC_delay
+     71          	while(SDA_IN())
+   \                     ??IIC_Wait_Ack_0: (+1)
+   \   00000026   0x....             LDR.N    R0,??DataTable6_3  ;; 0x43fe1a24
+   \   00000028   0x6800             LDR      R0,[R0, #+0]
+   \   0000002A   0x2800             CMP      R0,#+0
+   \   0000002C   0xD00C             BEQ.N    ??IIC_Wait_Ack_1
+     72          	{
+     73          		ucErrTime++;
+   \   0000002E   0x1C64             ADDS     R4,R4,#+1
+     74          		if(ucErrTime>50)
+   \   00000030   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000032   0x2C33             CMP      R4,#+51
+   \   00000034   0xDB03             BLT.N    ??IIC_Wait_Ack_2
+     75          		{
+     76          			IIC_Stop();
+   \   00000036   0x.... 0x....      BL       IIC_Stop
+     77          			return 1;
+   \   0000003A   0x2001             MOVS     R0,#+1
+   \   0000003C   0xE008             B.N      ??IIC_Wait_Ack_3
+     78          		}
+     79          	  IIC_DELAY();
+   \                     ??IIC_Wait_Ack_2: (+1)
+   \   0000003E   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000042   0x.... 0x....      BL       IIC_delay
+   \   00000046   0xE7EE             B.N      ??IIC_Wait_Ack_0
+     80          	}
+     81          	SCL_L();//ê±?óê?3?0 	   
+   \                     ??IIC_Wait_Ack_1: (+1)
+   \   00000048   0x2000             MOVS     R0,#+0
+   \   0000004A   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000004C   0x6008             STR      R0,[R1, #+0]
+     82          	return 0;  
+   \   0000004E   0x2000             MOVS     R0,#+0
+   \                     ??IIC_Wait_Ack_3: (+1)
+   \   00000050   0xBD10             POP      {R4,PC}          ;; return
+     83          } 
+     84          
+     85          /**************************实现函数********************************************
+     86          *函数原型:		void IIC_Ack(void)
+     87          *功　　能:	    产生ACK应答
+     88          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+     89          void IIC_Ack(void)
+     90          {
+   \                     IIC_Ack: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     91          	SCL_L();
+   \   00000002   0x2000             MOVS     R0,#+0
+   \   00000004   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+     92          	SDA_DDR_OUT();
+   \   00000008   0x2001             MOVS     R0,#+1
+   \   0000000A   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   0000000C   0x6008             STR      R0,[R1, #+0]
+     93          	SDA_L();
+   \   0000000E   0x2000             MOVS     R0,#+0
+   \   00000010   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   00000012   0x6008             STR      R0,[R1, #+0]
+     94          	IIC_DELAY();
+   \   00000014   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000018   0x.... 0x....      BL       IIC_delay
+     95          	SCL_H();
+   \   0000001C   0x2001             MOVS     R0,#+1
+   \   0000001E   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000020   0x6008             STR      R0,[R1, #+0]
+     96          	IIC_DELAY();
+   \   00000022   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000026   0x.... 0x....      BL       IIC_delay
+     97          	SCL_L();
+   \   0000002A   0x2000             MOVS     R0,#+0
+   \   0000002C   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000002E   0x6008             STR      R0,[R1, #+0]
+     98          }
+   \   00000030   0xBD01             POP      {R0,PC}          ;; return
+     99          	
+    100          /**************************实现函数********************************************
+    101          *函数原型:		void IIC_NAck(void)
+    102          *功　　能:	    产生NACK应答
+    103          *******************************************************************************/	    
+
+   \                                 In section .text, align 2, keep-with-next
+    104          void IIC_NAck(void)
+    105          {
+   \                     IIC_NAck: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+    106          	SCL_L();
+   \   00000002   0x2000             MOVS     R0,#+0
+   \   00000004   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+    107          	SDA_DDR_OUT();
+   \   00000008   0x2001             MOVS     R0,#+1
+   \   0000000A   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   0000000C   0x6008             STR      R0,[R1, #+0]
+    108          	SDA_H();
+   \   0000000E   0x2001             MOVS     R0,#+1
+   \   00000010   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   00000012   0x6008             STR      R0,[R1, #+0]
+    109          	IIC_DELAY();
+   \   00000014   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000018   0x.... 0x....      BL       IIC_delay
+    110          	SCL_H();
+   \   0000001C   0x2001             MOVS     R0,#+1
+   \   0000001E   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000020   0x6008             STR      R0,[R1, #+0]
+    111          	IIC_DELAY();
+   \   00000022   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000026   0x.... 0x....      BL       IIC_delay
+    112          	SCL_L();
+   \   0000002A   0x2000             MOVS     R0,#+0
+   \   0000002C   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000002E   0x6008             STR      R0,[R1, #+0]
+    113          }					 				     
+   \   00000030   0xBD01             POP      {R0,PC}          ;; return
+    114          
+    115          /**************************实现函数********************************************
+    116          *函数原型:		void IIC_Send_Byte(u8 txd)
+    117          *功　　能:	    IIC发送一个字节
+    118          *******************************************************************************/		  
+
+   \                                 In section .text, align 2, keep-with-next
+    119          void IIC_Send_Byte(uint8 txd)
+    120          {                        
+   \                     IIC_Send_Byte: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    121              uint8 t=8;   
+   \   00000004   0x2508             MOVS     R5,#+8
+    122              SDA_DDR_OUT(); 	    
+   \   00000006   0x2001             MOVS     R0,#+1
+   \   00000008   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   0000000A   0x6008             STR      R0,[R1, #+0]
+    123              SCL_L();
+   \   0000000C   0x2000             MOVS     R0,#+0
+   \   0000000E   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000010   0x6008             STR      R0,[R1, #+0]
+    124              while(t--)
+   \                     ??IIC_Send_Byte_0: (+1)
+   \   00000012   0x0028             MOVS     R0,R5
+   \   00000014   0x1E45             SUBS     R5,R0,#+1
+   \   00000016   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000018   0x2800             CMP      R0,#+0
+   \   0000001A   0xD018             BEQ.N    ??IIC_Send_Byte_1
+    125              {
+    126                  if(txd&0x80)
+   \   0000001C   0x0620             LSLS     R0,R4,#+24
+   \   0000001E   0xD503             BPL.N    ??IIC_Send_Byte_2
+    127                  {
+    128                      SDA_H();
+   \   00000020   0x2001             MOVS     R0,#+1
+   \   00000022   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   00000024   0x6008             STR      R0,[R1, #+0]
+   \   00000026   0xE002             B.N      ??IIC_Send_Byte_3
+    129                  }
+    130                  else
+    131                  {
+    132                      SDA_L();
+   \                     ??IIC_Send_Byte_2: (+1)
+   \   00000028   0x2000             MOVS     R0,#+0
+   \   0000002A   0x....             LDR.N    R1,??DataTable6_1  ;; 0x43fe1824
+   \   0000002C   0x6008             STR      R0,[R1, #+0]
+    133                  }
+    134                  txd<<=1; 
+   \                     ??IIC_Send_Byte_3: (+1)
+   \   0000002E   0x0064             LSLS     R4,R4,#+1
+    135                  IIC_DELAY();   
+   \   00000030   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000034   0x.... 0x....      BL       IIC_delay
+    136          	SCL_H();
+   \   00000038   0x2001             MOVS     R0,#+1
+   \   0000003A   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000003C   0x6008             STR      R0,[R1, #+0]
+    137          	IIC_DELAY(); 
+   \   0000003E   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000042   0x.... 0x....      BL       IIC_delay
+    138          	SCL_L();	
+   \   00000046   0x2000             MOVS     R0,#+0
+   \   00000048   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000004A   0x6008             STR      R0,[R1, #+0]
+   \   0000004C   0xE7E1             B.N      ??IIC_Send_Byte_0
+    139          	//IIC_delay();
+    140              }
+    141          } 	 
+   \                     ??IIC_Send_Byte_1: (+1)
+   \   0000004E   0xBD31             POP      {R0,R4,R5,PC}    ;; return
+    142             
+    143          /**************************实现函数********************************************
+    144          *函数原型:		u8 IIC_Read_Byte(unsigned char ack)
+    145          *功　　能:	    //读1个字节，ack=1时，发送ACK，ack=0，发送nACK 
+    146          *******************************************************************************/ 
+
+   \                                 In section .text, align 2, keep-with-next
+    147          uint8 IIC_Read_Byte(unsigned char ack)
+    148          {
+   \                     IIC_Read_Byte: (+1)
+   \   00000000   0xB570             PUSH     {R4-R6,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    149              unsigned char i,receive=0;
+   \   00000004   0x2600             MOVS     R6,#+0
+    150              SDA_DDR_IN();
+   \   00000006   0x2000             MOVS     R0,#+0
+   \   00000008   0x....             LDR.N    R1,??DataTable6  ;; 0x43fe1aa4
+   \   0000000A   0x6008             STR      R0,[R1, #+0]
+    151              for(i=0;i<8;i++ )
+   \   0000000C   0x2000             MOVS     R0,#+0
+   \   0000000E   0x0005             MOVS     R5,R0
+   \                     ??IIC_Read_Byte_0: (+1)
+   \   00000010   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000012   0x2D08             CMP      R5,#+8
+   \   00000014   0xDA15             BGE.N    ??IIC_Read_Byte_1
+    152              {
+    153                  SCL_L(); 
+   \   00000016   0x2000             MOVS     R0,#+0
+   \   00000018   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   0000001A   0x6008             STR      R0,[R1, #+0]
+    154                  IIC_DELAY();
+   \   0000001C   0xF44F 0x70C8      MOV      R0,#+400
+   \   00000020   0x.... 0x....      BL       IIC_delay
+    155          	SCL_H();
+   \   00000024   0x2001             MOVS     R0,#+1
+   \   00000026   0x....             LDR.N    R1,??DataTable6_2  ;; 0x43fe1820
+   \   00000028   0x6008             STR      R0,[R1, #+0]
+    156                  receive<<=1;
+   \   0000002A   0x0076             LSLS     R6,R6,#+1
+    157                  if(SDA_IN())receive++;   
+   \   0000002C   0x....             LDR.N    R0,??DataTable6_3  ;; 0x43fe1a24
+   \   0000002E   0x6800             LDR      R0,[R0, #+0]
+   \   00000030   0x2800             CMP      R0,#+0
+   \   00000032   0xD000             BEQ.N    ??IIC_Read_Byte_2
+   \   00000034   0x1C76             ADDS     R6,R6,#+1
+    158          	IIC_DELAY(); 
+   \                     ??IIC_Read_Byte_2: (+1)
+   \   00000036   0xF44F 0x70C8      MOV      R0,#+400
+   \   0000003A   0x.... 0x....      BL       IIC_delay
+    159              }					 
+   \   0000003E   0x1C6D             ADDS     R5,R5,#+1
+   \   00000040   0xE7E6             B.N      ??IIC_Read_Byte_0
+    160              if (ack)
+   \                     ??IIC_Read_Byte_1: (+1)
+   \   00000042   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000044   0x2C00             CMP      R4,#+0
+   \   00000046   0xD002             BEQ.N    ??IIC_Read_Byte_3
+    161                  IIC_Ack(); 
+   \   00000048   0x.... 0x....      BL       IIC_Ack
+   \   0000004C   0xE001             B.N      ??IIC_Read_Byte_4
+    162              else
+    163                  IIC_NAck();
+   \                     ??IIC_Read_Byte_3: (+1)
+   \   0000004E   0x.... 0x....      BL       IIC_NAck
+    164              return receive;
+   \                     ??IIC_Read_Byte_4: (+1)
+   \   00000052   0x0030             MOVS     R0,R6
+   \   00000054   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000056   0xBD70             POP      {R4-R6,PC}       ;; return
+    165          }
+    166          
+    167          /**************************实现函数********************************************
+    168          *函数原型:		unsigned char I2C_ReadOneByte(unsigned char I2C_Addr,unsigned char addr)
+    169          *功　　能:	    读取指定设备 指定寄存器的一个值
+    170          输入	I2C_Addr  目标设备地址
+    171          		addr	   寄存器地址
+    172          返回   读出来的值
+    173          *******************************************************************************/ 
+
+   \                                 In section .text, align 2, keep-with-next
+    174          unsigned char I2C_ReadOneByte(unsigned char I2C_Addr,unsigned char addr)
+    175          {
+   \                     I2C_ReadOneByte: (+1)
+   \   00000000   0xB570             PUSH     {R4-R6,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+   \   00000004   0x000D             MOVS     R5,R1
+    176          	unsigned char res=0;
+   \   00000006   0x2600             MOVS     R6,#+0
+    177          	
+    178          	IIC_Start();	
+   \   00000008   0x.... 0x....      BL       IIC_Start
+    179          	IIC_Send_Byte(I2C_Addr);	   
+   \   0000000C   0x0020             MOVS     R0,R4
+   \   0000000E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000010   0x.... 0x....      BL       IIC_Send_Byte
+    180          	res++;
+   \   00000014   0x1C76             ADDS     R6,R6,#+1
+    181          	IIC_Wait_Ack();
+   \   00000016   0x.... 0x....      BL       IIC_Wait_Ack
+    182          	IIC_Send_Byte(addr); res++;  
+   \   0000001A   0x0028             MOVS     R0,R5
+   \   0000001C   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001E   0x.... 0x....      BL       IIC_Send_Byte
+   \   00000022   0x1C76             ADDS     R6,R6,#+1
+    183          	IIC_Wait_Ack();	  
+   \   00000024   0x.... 0x....      BL       IIC_Wait_Ack
+    184          	//IIC_Stop();
+    185          	IIC_Start();
+   \   00000028   0x.... 0x....      BL       IIC_Start
+    186          	IIC_Send_Byte(I2C_Addr+1); res++; 	   
+   \   0000002C   0x1C60             ADDS     R0,R4,#+1
+   \   0000002E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000030   0x.... 0x....      BL       IIC_Send_Byte
+   \   00000034   0x1C76             ADDS     R6,R6,#+1
+    187          	IIC_Wait_Ack();
+   \   00000036   0x.... 0x....      BL       IIC_Wait_Ack
+    188          	res=IIC_Read_Byte(0);	   
+   \   0000003A   0x2000             MOVS     R0,#+0
+   \   0000003C   0x.... 0x....      BL       IIC_Read_Byte
+   \   00000040   0x0006             MOVS     R6,R0
+    189              IIC_Stop();
+   \   00000042   0x.... 0x....      BL       IIC_Stop
+    190          
+    191          	return res;
+   \   00000046   0x0030             MOVS     R0,R6
+   \   00000048   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000004A   0xBD70             POP      {R4-R6,PC}       ;; return
+    192          }
+    193          
+    194          
+    195          /**************************实现函数********************************************
+    196          *函数原型:		u8 IICreadBytes(u8 dev, u8 reg, u8 length, u8 *data)
+    197          *功　　能:	    读取指定设备 指定寄存器的 length个值
+    198          输入	dev  目标设备地址
+    199          		reg	  寄存器地址
+    200          		length 要读的字节数
+    201          		*data  读出的数据将要存放的指针
+    202          返回   读出来的字节数量
+    203          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+    204          uint8 IICreadBytes(uint8 dev, uint8 reg, uint8 length, uint8 *data){
+   \                     IICreadBytes: (+1)
+   \   00000000   0xE92D 0x41F0      PUSH     {R4-R8,LR}
+   \   00000004   0x0004             MOVS     R4,R0
+   \   00000006   0x000D             MOVS     R5,R1
+   \   00000008   0x0016             MOVS     R6,R2
+   \   0000000A   0x001F             MOVS     R7,R3
+    205              uint8 count = 0;
+   \   0000000C   0xF05F 0x0800      MOVS     R8,#+0
+    206          	
+    207          	IIC_Start();
+   \   00000010   0x.... 0x....      BL       IIC_Start
+    208          	IIC_Send_Byte(dev);	   
+   \   00000014   0x0020             MOVS     R0,R4
+   \   00000016   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000018   0x.... 0x....      BL       IIC_Send_Byte
+    209          	IIC_Wait_Ack();
+   \   0000001C   0x.... 0x....      BL       IIC_Wait_Ack
+    210          	IIC_Send_Byte(reg);   
+   \   00000020   0x0028             MOVS     R0,R5
+   \   00000022   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000024   0x.... 0x....      BL       IIC_Send_Byte
+    211              IIC_Wait_Ack();	  
+   \   00000028   0x.... 0x....      BL       IIC_Wait_Ack
+    212          	IIC_Start();
+   \   0000002C   0x.... 0x....      BL       IIC_Start
+    213          	IIC_Send_Byte(dev+1);  
+   \   00000030   0x1C60             ADDS     R0,R4,#+1
+   \   00000032   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000034   0x.... 0x....      BL       IIC_Send_Byte
+    214          	IIC_Wait_Ack();
+   \   00000038   0x.... 0x....      BL       IIC_Wait_Ack
+    215          	
+    216              for(count=0;count<length;count++){
+   \   0000003C   0x2000             MOVS     R0,#+0
+   \   0000003E   0x4680             MOV      R8,R0
+   \                     ??IICreadBytes_0: (+1)
+   \   00000040   0xFA5F 0xF888      UXTB     R8,R8            ;; ZeroExt  R8,R8,#+24,#+24
+   \   00000044   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   00000046   0x45B0             CMP      R8,R6
+   \   00000048   0xD217             BCS.N    ??IICreadBytes_1
+    217          		 
+    218          		 if(count!=length-1)data[count]=IIC_Read_Byte(1);  
+   \   0000004A   0xFA5F 0xF888      UXTB     R8,R8            ;; ZeroExt  R8,R8,#+24,#+24
+   \   0000004E   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   00000050   0x1E70             SUBS     R0,R6,#+1
+   \   00000052   0x4580             CMP      R8,R0
+   \   00000054   0xD007             BEQ.N    ??IICreadBytes_2
+   \   00000056   0x2001             MOVS     R0,#+1
+   \   00000058   0x.... 0x....      BL       IIC_Read_Byte
+   \   0000005C   0xFA5F 0xF888      UXTB     R8,R8            ;; ZeroExt  R8,R8,#+24,#+24
+   \   00000060   0xF808 0x0007      STRB     R0,[R8, R7]
+   \   00000064   0xE006             B.N      ??IICreadBytes_3
+    219          		 	else  data[count]=IIC_Read_Byte(0);	 
+   \                     ??IICreadBytes_2: (+1)
+   \   00000066   0x2000             MOVS     R0,#+0
+   \   00000068   0x.... 0x....      BL       IIC_Read_Byte
+   \   0000006C   0xFA5F 0xF888      UXTB     R8,R8            ;; ZeroExt  R8,R8,#+24,#+24
+   \   00000070   0xF808 0x0007      STRB     R0,[R8, R7]
+    220          	}
+   \                     ??IICreadBytes_3: (+1)
+   \   00000074   0xF118 0x0801      ADDS     R8,R8,#+1
+   \   00000078   0xE7E2             B.N      ??IICreadBytes_0
+    221              IIC_Stop();
+   \                     ??IICreadBytes_1: (+1)
+   \   0000007A   0x.... 0x....      BL       IIC_Stop
+    222              return count;
+   \   0000007E   0x4640             MOV      R0,R8
+   \   00000080   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000082   0xE8BD 0x81F0      POP      {R4-R8,PC}       ;; return
+    223          }
+    224          
+    225          /**************************实现函数********************************************
+    226          *函数原型:		u8 IICwriteBytes(u8 dev, u8 reg, u8 length, u8* data)
+    227          *功　　能:	    将多个字节写入指定设备 指定寄存器
+    228          输入	dev  目标设备地址
+    229          		reg	  寄存器地址
+    230          		length 要写的字节数
+    231          		*data  将要写的数据的首地址
+    232          返回   返回是否成功
+    233          *******************************************************************************/ 
+
+   \                                 In section .text, align 2, keep-with-next
+    234          uint8 IICwriteBytes(uint8 dev, uint8 reg, uint8 length, uint8* data){
+   \                     IICwriteBytes: (+1)
+   \   00000000   0xE92D 0x41F0      PUSH     {R4-R8,LR}
+   \   00000004   0x0004             MOVS     R4,R0
+   \   00000006   0x000D             MOVS     R5,R1
+   \   00000008   0x0016             MOVS     R6,R2
+   \   0000000A   0x001F             MOVS     R7,R3
+    235            
+    236           	uint8 count = 0;
+   \   0000000C   0xF05F 0x0800      MOVS     R8,#+0
+    237          	IIC_Start();
+   \   00000010   0x.... 0x....      BL       IIC_Start
+    238          	IIC_Send_Byte(dev);	   
+   \   00000014   0x0020             MOVS     R0,R4
+   \   00000016   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000018   0x.... 0x....      BL       IIC_Send_Byte
+    239          	IIC_Wait_Ack();
+   \   0000001C   0x.... 0x....      BL       IIC_Wait_Ack
+    240          	IIC_Send_Byte(reg);   
+   \   00000020   0x0028             MOVS     R0,R5
+   \   00000022   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000024   0x.... 0x....      BL       IIC_Send_Byte
+    241              IIC_Wait_Ack();	  
+   \   00000028   0x.... 0x....      BL       IIC_Wait_Ack
+    242          	for(count=0;count<length;count++){
+   \   0000002C   0x2000             MOVS     R0,#+0
+   \   0000002E   0x4680             MOV      R8,R0
+   \                     ??IICwriteBytes_0: (+1)
+   \   00000030   0xFA5F 0xF888      UXTB     R8,R8            ;; ZeroExt  R8,R8,#+24,#+24
+   \   00000034   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   00000036   0x45B0             CMP      R8,R6
+   \   00000038   0xD20A             BCS.N    ??IICwriteBytes_1
+    243          		IIC_Send_Byte(data[count]); 
+   \   0000003A   0xFA5F 0xF888      UXTB     R8,R8            ;; ZeroExt  R8,R8,#+24,#+24
+   \   0000003E   0xF818 0x0007      LDRB     R0,[R8, R7]
+   \   00000042   0x.... 0x....      BL       IIC_Send_Byte
+    244          		IIC_Wait_Ack(); 
+   \   00000046   0x.... 0x....      BL       IIC_Wait_Ack
+    245          	 }
+   \   0000004A   0xF118 0x0801      ADDS     R8,R8,#+1
+   \   0000004E   0xE7EF             B.N      ??IICwriteBytes_0
+    246          	IIC_Stop();
+   \                     ??IICwriteBytes_1: (+1)
+   \   00000050   0x.... 0x....      BL       IIC_Stop
+    247          
+    248              return 1; //status == 0;
+   \   00000054   0x2001             MOVS     R0,#+1
+   \   00000056   0xE8BD 0x81F0      POP      {R4-R8,PC}       ;; return
+    249          }
+    250          
+    251          /**************************实现函数********************************************
+    252          *函数原型:		u8 IICreadByte(u8 dev, u8 reg, u8 *data)
+    253          *功　　能:	    读取指定设备 指定寄存器的一个值
+    254          输入	dev  目标设备地址
+    255          		reg	   寄存器地址
+    256          		*data  读出的数据将要存放的地址
+    257          返回   1
+    258          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+    259          uint8 IICreadByte(uint8 dev, uint8 reg, uint8 *data){
+   \                     IICreadByte: (+1)
+   \   00000000   0xB570             PUSH     {R4-R6,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+   \   00000004   0x000D             MOVS     R5,R1
+   \   00000006   0x0016             MOVS     R6,R2
+    260          	*data=I2C_ReadOneByte(dev, reg);
+   \   00000008   0x0029             MOVS     R1,R5
+   \   0000000A   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   0000000C   0x0020             MOVS     R0,R4
+   \   0000000E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000010   0x.... 0x....      BL       I2C_ReadOneByte
+   \   00000014   0x7030             STRB     R0,[R6, #+0]
+    261              return 1;
+   \   00000016   0x2001             MOVS     R0,#+1
+   \   00000018   0xBD70             POP      {R4-R6,PC}       ;; return
+    262          }
+    263          
+    264          /**************************实现函数********************************************
+    265          *函数原型:		unsigned char IICwriteByte(unsigned char dev, unsigned char reg, unsigned char data)
+    266          *功　　能:	    写入指定设备 指定寄存器一个字节
+    267          输入	dev  目标设备地址
+    268          		reg	   寄存器地址
+    269          		data  将要写入的字节
+    270          返回   1
+    271          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+    272          unsigned char IICwriteByte(unsigned char dev, unsigned char reg, unsigned char data){
+   \                     IICwriteByte: (+1)
+   \   00000000   0xB534             PUSH     {R2,R4,R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+   \   00000004   0x000D             MOVS     R5,R1
+    273              return IICwriteBytes(dev, reg, 1, &data);
+   \   00000006   0xAB00             ADD      R3,SP,#+0
+   \   00000008   0x2201             MOVS     R2,#+1
+   \   0000000A   0x0029             MOVS     R1,R5
+   \   0000000C   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   0000000E   0x0020             MOVS     R0,R4
+   \   00000010   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000012   0x.... 0x....      BL       IICwriteBytes
+   \   00000016   0xBD32             POP      {R1,R4,R5,PC}    ;; return
+    274          }
+    275          
+    276          /**************************实现函数********************************************
+    277          *函数原型:		u8 IICwriteBits(u8 dev,u8 reg,u8 bitStart,u8 length,u8 data)
+    278          *功　　能:	    读 修改 写 指定设备 指定寄存器一个字节 中的多个位
+    279          输入	dev  目标设备地址
+    280          		reg	   寄存器地址
+    281          		bitStart  目标字节的起始位
+    282          		length   位长度
+    283          		data    存放改变目标字节位的值
+    284          返回   成功 为1 
+    285           		失败为0
+    286          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+    287          uint8 IICwriteBits(uint8 dev,uint8 reg,uint8 bitStart,uint8 length,uint8 data)
+    288          {
+   \                     IICwriteBits: (+1)
+   \   00000000   0xE92D 0x43F8      PUSH     {R3-R9,LR}
+   \   00000004   0x0004             MOVS     R4,R0
+   \   00000006   0x000D             MOVS     R5,R1
+   \   00000008   0x0016             MOVS     R6,R2
+   \   0000000A   0x001F             MOVS     R7,R3
+   \   0000000C   0xF8DD 0x9020      LDR      R9,[SP, #+32]
+    289          
+    290              uint8 b;
+    291              if (IICreadByte(dev, reg, &b) != 0) {
+   \   00000010   0xAA00             ADD      R2,SP,#+0
+   \   00000012   0x0029             MOVS     R1,R5
+   \   00000014   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   00000016   0x0020             MOVS     R0,R4
+   \   00000018   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001A   0x.... 0x....      BL       IICreadByte
+   \   0000001E   0x2800             CMP      R0,#+0
+   \   00000020   0xD02A             BEQ.N    ??IICwriteBits_0
+    292                  uint8 mask = (0xFF << (bitStart + 1)) | 0xFF >> ((8 - bitStart) + length - 1);
+   \   00000022   0x20FF             MOVS     R0,#+255
+   \   00000024   0x1C71             ADDS     R1,R6,#+1
+   \   00000026   0x4088             LSLS     R0,R0,R1
+   \   00000028   0x21FF             MOVS     R1,#+255
+   \   0000002A   0x1BBA             SUBS     R2,R7,R6
+   \   0000002C   0x1DD2             ADDS     R2,R2,#+7
+   \   0000002E   0x000B             MOVS     R3,R1
+   \   00000030   0x4113             ASRS     R3,R3,R2
+   \   00000032   0xEA53 0x0800      ORRS     R8,R3,R0
+    293                  data <<= (8 - length);
+   \   00000036   0xF1D7 0x0008      RSBS     R0,R7,#+8
+   \   0000003A   0xFA19 0xF900      LSLS     R9,R9,R0
+    294                  data >>= (7 - bitStart);
+   \   0000003E   0xF1D6 0x0107      RSBS     R1,R6,#+7
+   \   00000042   0x4648             MOV      R0,R9
+   \   00000044   0x4681             MOV      R9,R0
+   \   00000046   0xFA5F 0xF989      UXTB     R9,R9            ;; ZeroExt  R9,R9,#+24,#+24
+   \   0000004A   0xFA39 0xF901      LSRS     R9,R9,R1
+    295                  b &= mask;
+   \   0000004E   0xF89D 0x0000      LDRB     R0,[SP, #+0]
+   \   00000052   0xEA18 0x0000      ANDS     R0,R8,R0
+   \   00000056   0xF88D 0x0000      STRB     R0,[SP, #+0]
+    296                  b |= data;
+   \   0000005A   0xF89D 0x0000      LDRB     R0,[SP, #+0]
+   \   0000005E   0xEA59 0x0000      ORRS     R0,R9,R0
+   \   00000062   0xF88D 0x0000      STRB     R0,[SP, #+0]
+    297                  return IICwriteByte(dev, reg, b);
+   \   00000066   0xF89D 0x2000      LDRB     R2,[SP, #+0]
+   \   0000006A   0x0029             MOVS     R1,R5
+   \   0000006C   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   0000006E   0x0020             MOVS     R0,R4
+   \   00000070   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000072   0x.... 0x....      BL       IICwriteByte
+   \   00000076   0xE000             B.N      ??IICwriteBits_1
+    298              } else {
+    299                  return 0;
+   \                     ??IICwriteBits_0: (+1)
+   \   00000078   0x2000             MOVS     R0,#+0
+   \                     ??IICwriteBits_1: (+1)
+   \   0000007A   0xE8BD 0x83F2      POP      {R1,R4-R9,PC}    ;; return
+    300              }
+    301          }
+    302          
+    303          /**************************实现函数********************************************
+    304          *函数原型:		u8 IICwriteBit(u8 dev, u8 reg, u8 bitNum, u8 data)
+    305          *功　　能:	    读 修改 写 指定设备 指定寄存器一个字节 中的1个位
+    306          输入	dev  目标设备地址
+    307          		reg	   寄存器地址
+    308          		bitNum  要修改目标字节的bitNum位
+    309          		data  为0 时，目标位将被清0 否则将被置位
+    310          返回   成功 为1 
+    311           		失败为0
+    312          *******************************************************************************/ 
+
+   \                                 In section .text, align 2, keep-with-next
+    313          uint8 IICwriteBit(uint8 dev, uint8 reg, uint8 bitNum, uint8 data){
+   \                     IICwriteBit: (+1)
+   \   00000000   0xB5F8             PUSH     {R3-R7,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+   \   00000004   0x000D             MOVS     R5,R1
+   \   00000006   0x0016             MOVS     R6,R2
+   \   00000008   0x001F             MOVS     R7,R3
+    314              uint8 b;
+    315              IICreadByte(dev, reg, &b);
+   \   0000000A   0xAA00             ADD      R2,SP,#+0
+   \   0000000C   0x0029             MOVS     R1,R5
+   \   0000000E   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   00000010   0x0020             MOVS     R0,R4
+   \   00000012   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000014   0x.... 0x....      BL       IICreadByte
+    316              b = (data != 0) ? (b | (1 << bitNum)) : (b & ~(1 << bitNum));
+   \   00000018   0xB2FF             UXTB     R7,R7            ;; ZeroExt  R7,R7,#+24,#+24
+   \   0000001A   0x2F00             CMP      R7,#+0
+   \   0000001C   0xD007             BEQ.N    ??IICwriteBit_0
+   \   0000001E   0xF89D 0x0000      LDRB     R0,[SP, #+0]
+   \   00000022   0x2101             MOVS     R1,#+1
+   \   00000024   0x40B1             LSLS     R1,R1,R6
+   \   00000026   0x4308             ORRS     R0,R1,R0
+   \   00000028   0xF88D 0x0000      STRB     R0,[SP, #+0]
+   \   0000002C   0xE006             B.N      ??IICwriteBit_1
+   \                     ??IICwriteBit_0: (+1)
+   \   0000002E   0xF89D 0x0000      LDRB     R0,[SP, #+0]
+   \   00000032   0x2101             MOVS     R1,#+1
+   \   00000034   0x40B1             LSLS     R1,R1,R6
+   \   00000036   0x4388             BICS     R0,R0,R1
+   \   00000038   0xF88D 0x0000      STRB     R0,[SP, #+0]
+    317              return IICwriteByte(dev, reg, b);
+   \                     ??IICwriteBit_1: (+1)
+   \   0000003C   0xF89D 0x2000      LDRB     R2,[SP, #+0]
+   \   00000040   0x0029             MOVS     R1,R5
+   \   00000042   0xB2C9             UXTB     R1,R1            ;; ZeroExt  R1,R1,#+24,#+24
+   \   00000044   0x0020             MOVS     R0,R4
+   \   00000046   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000048   0x.... 0x....      BL       IICwriteByte
+   \   0000004C   0xBDF2             POP      {R1,R4-R7,PC}    ;; return
+    318          }
+    319          
+    320          
+    321          
+    322          /*********************************MS5611 IIC**********************************
+    323          **MS5611 IIC Read & Write Functions
+    324          **(1) MS5611 Write Data
+    325          **(2) MS5611 Read 2 Bytes
+    326          **(3) MS5611 Read 3 Bytes
+    327          *******************************************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+    328          uint8 ms5611_IICwriteData(uint8 dev, uint8 data)
+    329          {
+   \                     ms5611_IICwriteData: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+   \   00000004   0x000D             MOVS     R5,R1
+    330              IIC_Start();
+   \   00000006   0x.... 0x....      BL       IIC_Start
+    331              IIC_Send_Byte(dev);
+   \   0000000A   0x0020             MOVS     R0,R4
+   \   0000000C   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000000E   0x.... 0x....      BL       IIC_Send_Byte
+    332              IIC_Wait_Ack();
+   \   00000012   0x.... 0x....      BL       IIC_Wait_Ack
+    333              IIC_Send_Byte(data);
+   \   00000016   0x0028             MOVS     R0,R5
+   \   00000018   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001A   0x.... 0x....      BL       IIC_Send_Byte
+    334              IIC_Wait_Ack();
+   \   0000001E   0x.... 0x....      BL       IIC_Wait_Ack
+    335              IIC_Stop();
+   \   00000022   0x.... 0x....      BL       IIC_Stop
+    336              return 1;
+   \   00000026   0x2001             MOVS     R0,#+1
+   \   00000028   0xBD32             POP      {R1,R4,R5,PC}    ;; return
+    337          }
+    338          
+
+   \                                 In section .text, align 2, keep-with-next
+    339          uint16 ms5611_IICread2Data(uint8 dev)
+    340          {
+   \                     ms5611_IICread2Data: (+1)
+   \   00000000   0xB570             PUSH     {R4-R6,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    341              uint8 temp1, temp2;
+    342              IIC_Start();
+   \   00000004   0x.... 0x....      BL       IIC_Start
+    343              IIC_Send_Byte(dev+1);
+   \   00000008   0x1C60             ADDS     R0,R4,#+1
+   \   0000000A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000000C   0x.... 0x....      BL       IIC_Send_Byte
+    344              IIC_Wait_Ack();
+   \   00000010   0x.... 0x....      BL       IIC_Wait_Ack
+    345              temp1 = IIC_Read_Byte(1);
+   \   00000014   0x2001             MOVS     R0,#+1
+   \   00000016   0x.... 0x....      BL       IIC_Read_Byte
+   \   0000001A   0x0005             MOVS     R5,R0
+    346              temp2 = IIC_Read_Byte(0);
+   \   0000001C   0x2000             MOVS     R0,#+0
+   \   0000001E   0x.... 0x....      BL       IIC_Read_Byte
+   \   00000022   0x0006             MOVS     R6,R0
+    347              IIC_Stop();
+   \   00000024   0x.... 0x....      BL       IIC_Stop
+    348              return (temp1<<8 | temp2);
+   \   00000028   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   0000002A   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   0000002C   0xEA56 0x2005      ORRS     R0,R6,R5, LSL #+8
+   \   00000030   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \   00000032   0xBD70             POP      {R4-R6,PC}       ;; return
+    349          }
+    350          
+
+   \                                 In section .text, align 2, keep-with-next
+    351          uint32 ms5611_IICread3Data(uint8 dev)
+    352          {
+   \                     ms5611_IICread3Data: (+1)
+   \   00000000   0xB5F8             PUSH     {R3-R7,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    353              uint8 temp1, temp2, temp3;
+    354              IIC_Start();
+   \   00000004   0x.... 0x....      BL       IIC_Start
+    355              IIC_Send_Byte(dev+1);
+   \   00000008   0x1C60             ADDS     R0,R4,#+1
+   \   0000000A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000000C   0x.... 0x....      BL       IIC_Send_Byte
+    356              IIC_Wait_Ack();
+   \   00000010   0x.... 0x....      BL       IIC_Wait_Ack
+    357              temp1 = IIC_Read_Byte(1);
+   \   00000014   0x2001             MOVS     R0,#+1
+   \   00000016   0x.... 0x....      BL       IIC_Read_Byte
+   \   0000001A   0x0005             MOVS     R5,R0
+    358              temp2 = IIC_Read_Byte(1);
+   \   0000001C   0x2001             MOVS     R0,#+1
+   \   0000001E   0x.... 0x....      BL       IIC_Read_Byte
+   \   00000022   0x0006             MOVS     R6,R0
+    359              temp3 = IIC_Read_Byte(0);
+   \   00000024   0x2000             MOVS     R0,#+0
+   \   00000026   0x.... 0x....      BL       IIC_Read_Byte
+   \   0000002A   0x0007             MOVS     R7,R0
+    360              IIC_Stop();
+   \   0000002C   0x.... 0x....      BL       IIC_Stop
+    361              return (temp1<<16 | temp2 <<8 | temp3);
+   \   00000030   0xB2ED             UXTB     R5,R5            ;; ZeroExt  R5,R5,#+24,#+24
+   \   00000032   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   00000034   0x0230             LSLS     R0,R6,#+8
+   \   00000036   0xEA50 0x4005      ORRS     R0,R0,R5, LSL #+16
+   \   0000003A   0xB2FF             UXTB     R7,R7            ;; ZeroExt  R7,R7,#+24,#+24
+   \   0000003C   0x4338             ORRS     R0,R7,R0
+   \   0000003E   0xBDF2             POP      {R1,R4-R7,PC}    ;; return
+    362          }
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable6:
+   \   00000000   0x43FE1AA4         DC32     0x43fe1aa4
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable6_1:
+   \   00000000   0x43FE1824         DC32     0x43fe1824
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable6_2:
+   \   00000000   0x43FE1820         DC32     0x43fe1820
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable6_3:
+   \   00000000   0x43FE1A24         DC32     0x43fe1a24
+    363          //------------------End of File----------------------------
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   I2C_ReadOneByte
+        16   -> IIC_Read_Byte
+        16   -> IIC_Send_Byte
+        16   -> IIC_Start
+        16   -> IIC_Stop
+        16   -> IIC_Wait_Ack
+       8   IIC_Ack
+         8   -> IIC_delay
+       8   IIC_Init
+         8   -> gpio_init
+         8   -> port_init_NoALT
+       8   IIC_NAck
+         8   -> IIC_delay
+      16   IIC_Read_Byte
+        16   -> IIC_Ack
+        16   -> IIC_NAck
+        16   -> IIC_delay
+      16   IIC_Send_Byte
+        16   -> IIC_delay
+       8   IIC_Start
+         8   -> IIC_delay
+       8   IIC_Stop
+         8   -> IIC_delay
+       8   IIC_Wait_Ack
+         8   -> IIC_Stop
+         8   -> IIC_delay
+       4   IIC_delay
+      16   IICreadByte
+        16   -> I2C_ReadOneByte
+      24   IICreadBytes
+        24   -> IIC_Read_Byte
+        24   -> IIC_Send_Byte
+        24   -> IIC_Start
+        24   -> IIC_Stop
+        24   -> IIC_Wait_Ack
+      24   IICwriteBit
+        24   -> IICreadByte
+        24   -> IICwriteByte
+      32   IICwriteBits
+        32   -> IICreadByte
+        32   -> IICwriteByte
+      16   IICwriteByte
+        16   -> IICwriteBytes
+      24   IICwriteBytes
+        24   -> IIC_Send_Byte
+        24   -> IIC_Start
+        24   -> IIC_Stop
+        24   -> IIC_Wait_Ack
+      16   ms5611_IICread2Data
+        16   -> IIC_Read_Byte
+        16   -> IIC_Send_Byte
+        16   -> IIC_Start
+        16   -> IIC_Stop
+        16   -> IIC_Wait_Ack
+      24   ms5611_IICread3Data
+        24   -> IIC_Read_Byte
+        24   -> IIC_Send_Byte
+        24   -> IIC_Start
+        24   -> IIC_Stop
+        24   -> IIC_Wait_Ack
+      16   ms5611_IICwriteData
+        16   -> IIC_Send_Byte
+        16   -> IIC_Start
+        16   -> IIC_Stop
+        16   -> IIC_Wait_Ack
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable6
+       4  ??DataTable6_1
+       4  ??DataTable6_2
+       4  ??DataTable6_3
+      76  I2C_ReadOneByte
+      50  IIC_Ack
+      40  IIC_Init
+      50  IIC_NAck
+      88  IIC_Read_Byte
+      80  IIC_Send_Byte
+      50  IIC_Start
+      50  IIC_Stop
+      82  IIC_Wait_Ack
+      26  IIC_delay
+      26  IICreadByte
+     134  IICreadBytes
+      78  IICwriteBit
+     126  IICwriteBits
+      24  IICwriteByte
+      90  IICwriteBytes
+      52  ms5611_IICread2Data
+      64  ms5611_IICread3Data
+      42  ms5611_IICwriteData
+
+ 
+ 1 244 bytes in section .text
+ 
+ 1 244 bytes of CODE memory
+
+Errors: none
+Warnings: 35

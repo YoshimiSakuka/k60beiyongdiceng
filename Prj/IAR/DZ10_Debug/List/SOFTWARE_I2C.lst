@@ -1,0 +1,682 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:32
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\SOFTWARE_I2C.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\SOFTWARE_I2C.c -D
+#        DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\SOFTWARE_I2C.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\SOFTWARE_I2C.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\SOFTWARE_I2C.c
+      1          #include "SOFTWARE_I2C.h"
+      2          #include "MK60_gpio.h"
+      3          
+      4          
+      5          
+      6          
+      7          
+      8          
+      9          
+
+   \                                 In section .text, align 2, keep-with-next
+     10          void IIC_LDC_Start(void)
+     11          {
+   \                     IIC_LDC_Start: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     12            gpio_set(LDC_SDA,1);
+   \   00000002   0x2101             MOVS     R1,#+1
+   \   00000004   0x2041             MOVS     R0,#+65
+   \   00000006   0x.... 0x....      BL       gpio_set
+     13            gpio_set(LDC_SCL,1);
+   \   0000000A   0x2101             MOVS     R1,#+1
+   \   0000000C   0x2040             MOVS     R0,#+64
+   \   0000000E   0x.... 0x....      BL       gpio_set
+     14            DELAY_US(500);
+   \   00000012   0x....             LDR.N    R0,??DataTable6
+   \   00000014   0x6800             LDR      R0,[R0, #+0]
+   \   00000016   0xF44F 0x71FA      MOV      R1,#+500
+   \   0000001A   0x4348             MULS     R0,R1,R0
+   \   0000001C   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000020   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000024   0x.... 0x....      BL       systick_delay
+     15          
+     16            gpio_set(LDC_SDA,0);
+   \   00000028   0x2100             MOVS     R1,#+0
+   \   0000002A   0x2041             MOVS     R0,#+65
+   \   0000002C   0x.... 0x....      BL       gpio_set
+     17            DELAY_US(500);
+   \   00000030   0x....             LDR.N    R0,??DataTable6
+   \   00000032   0x6800             LDR      R0,[R0, #+0]
+   \   00000034   0xF44F 0x71FA      MOV      R1,#+500
+   \   00000038   0x4348             MULS     R0,R1,R0
+   \   0000003A   0xF44F 0x717A      MOV      R1,#+1000
+   \   0000003E   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000042   0x.... 0x....      BL       systick_delay
+     18            gpio_set(LDC_SCL,0);
+   \   00000046   0x2100             MOVS     R1,#+0
+   \   00000048   0x2040             MOVS     R0,#+64
+   \   0000004A   0x.... 0x....      BL       gpio_set
+     19          }
+   \   0000004E   0xBD01             POP      {R0,PC}          ;; return
+
+   \                                 In section .text, align 2, keep-with-next
+     20          void IIC_LDC_Stop(void)
+     21          {
+   \                     IIC_LDC_Stop: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     22            gpio_set(LDC_SCL,0);
+   \   00000002   0x2100             MOVS     R1,#+0
+   \   00000004   0x2040             MOVS     R0,#+64
+   \   00000006   0x.... 0x....      BL       gpio_set
+     23            gpio_set(LDC_SDA,0);
+   \   0000000A   0x2100             MOVS     R1,#+0
+   \   0000000C   0x2041             MOVS     R0,#+65
+   \   0000000E   0x.... 0x....      BL       gpio_set
+     24            DELAY_US(500);
+   \   00000012   0x....             LDR.N    R0,??DataTable6
+   \   00000014   0x6800             LDR      R0,[R0, #+0]
+   \   00000016   0xF44F 0x71FA      MOV      R1,#+500
+   \   0000001A   0x4348             MULS     R0,R1,R0
+   \   0000001C   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000020   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000024   0x.... 0x....      BL       systick_delay
+     25            gpio_set(LDC_SCL,1);
+   \   00000028   0x2101             MOVS     R1,#+1
+   \   0000002A   0x2040             MOVS     R0,#+64
+   \   0000002C   0x.... 0x....      BL       gpio_set
+     26            DELAY_US(500);
+   \   00000030   0x....             LDR.N    R0,??DataTable6
+   \   00000032   0x6800             LDR      R0,[R0, #+0]
+   \   00000034   0xF44F 0x71FA      MOV      R1,#+500
+   \   00000038   0x4348             MULS     R0,R1,R0
+   \   0000003A   0xF44F 0x717A      MOV      R1,#+1000
+   \   0000003E   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000042   0x.... 0x....      BL       systick_delay
+     27            gpio_set(LDC_SDA,1);
+   \   00000046   0x2101             MOVS     R1,#+1
+   \   00000048   0x2041             MOVS     R0,#+65
+   \   0000004A   0x.... 0x....      BL       gpio_set
+     28          }
+   \   0000004E   0xBD01             POP      {R0,PC}          ;; return
+
+   \                                 In section .text, align 2, keep-with-next
+     29          void Send_Ack(void)
+     30          {
+   \                     Send_Ack: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     31            gpio_set(LDC_SDA,0);
+   \   00000002   0x2100             MOVS     R1,#+0
+   \   00000004   0x2041             MOVS     R0,#+65
+   \   00000006   0x.... 0x....      BL       gpio_set
+     32            DELAY_US(500);
+   \   0000000A   0x....             LDR.N    R0,??DataTable6
+   \   0000000C   0x6800             LDR      R0,[R0, #+0]
+   \   0000000E   0xF44F 0x71FA      MOV      R1,#+500
+   \   00000012   0x4348             MULS     R0,R1,R0
+   \   00000014   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000018   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000001C   0x.... 0x....      BL       systick_delay
+     33            gpio_set(LDC_SCL,1);
+   \   00000020   0x2101             MOVS     R1,#+1
+   \   00000022   0x2040             MOVS     R0,#+64
+   \   00000024   0x.... 0x....      BL       gpio_set
+     34            DELAY_US(500);
+   \   00000028   0x....             LDR.N    R0,??DataTable6
+   \   0000002A   0x6800             LDR      R0,[R0, #+0]
+   \   0000002C   0xF44F 0x71FA      MOV      R1,#+500
+   \   00000030   0x4348             MULS     R0,R1,R0
+   \   00000032   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000036   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000003A   0x.... 0x....      BL       systick_delay
+     35            gpio_set(LDC_SCL,0);
+   \   0000003E   0x2100             MOVS     R1,#+0
+   \   00000040   0x2040             MOVS     R0,#+64
+   \   00000042   0x.... 0x....      BL       gpio_set
+     36            DELAY_US(300);
+   \   00000046   0x....             LDR.N    R0,??DataTable6
+   \   00000048   0x6800             LDR      R0,[R0, #+0]
+   \   0000004A   0xF44F 0x7196      MOV      R1,#+300
+   \   0000004E   0x4348             MULS     R0,R1,R0
+   \   00000050   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000054   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000058   0x.... 0x....      BL       systick_delay
+     37            gpio_set(LDC_SDA,1);
+   \   0000005C   0x2101             MOVS     R1,#+1
+   \   0000005E   0x2041             MOVS     R0,#+65
+   \   00000060   0x.... 0x....      BL       gpio_set
+     38          }
+   \   00000064   0xBD01             POP      {R0,PC}          ;; return
+
+   \                                 In section .text, align 2, keep-with-next
+     39          void Send_NoAck(void)
+     40          {
+   \                     Send_NoAck: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     41            gpio_set(LDC_SDA,1);
+   \   00000002   0x2101             MOVS     R1,#+1
+   \   00000004   0x2041             MOVS     R0,#+65
+   \   00000006   0x.... 0x....      BL       gpio_set
+     42            DELAY_US(300);
+   \   0000000A   0x....             LDR.N    R0,??DataTable6
+   \   0000000C   0x6800             LDR      R0,[R0, #+0]
+   \   0000000E   0xF44F 0x7196      MOV      R1,#+300
+   \   00000012   0x4348             MULS     R0,R1,R0
+   \   00000014   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000018   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000001C   0x.... 0x....      BL       systick_delay
+     43            gpio_set(LDC_SCL,1);
+   \   00000020   0x2101             MOVS     R1,#+1
+   \   00000022   0x2040             MOVS     R0,#+64
+   \   00000024   0x.... 0x....      BL       gpio_set
+     44            DELAY_US(300);
+   \   00000028   0x....             LDR.N    R0,??DataTable6
+   \   0000002A   0x6800             LDR      R0,[R0, #+0]
+   \   0000002C   0xF44F 0x7196      MOV      R1,#+300
+   \   00000030   0x4348             MULS     R0,R1,R0
+   \   00000032   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000036   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000003A   0x.... 0x....      BL       systick_delay
+     45            gpio_set(LDC_SCL,0);
+   \   0000003E   0x2100             MOVS     R1,#+0
+   \   00000040   0x2040             MOVS     R0,#+64
+   \   00000042   0x.... 0x....      BL       gpio_set
+     46          }
+   \   00000046   0xBD01             POP      {R0,PC}          ;; return
+
+   \                                 In section .text, align 2, keep-with-next
+     47          uint8 CACK_flag(void)
+     48          {
+   \                     CACK_flag: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+     49            uint8 ack_flag;
+     50            gpio_set(LDC_SDA,1);
+   \   00000002   0x2101             MOVS     R1,#+1
+   \   00000004   0x2041             MOVS     R0,#+65
+   \   00000006   0x.... 0x....      BL       gpio_set
+     51            DELAY_US(300);
+   \   0000000A   0x....             LDR.N    R0,??DataTable6
+   \   0000000C   0x6800             LDR      R0,[R0, #+0]
+   \   0000000E   0xF44F 0x7196      MOV      R1,#+300
+   \   00000012   0x4348             MULS     R0,R1,R0
+   \   00000014   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000018   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000001C   0x.... 0x....      BL       systick_delay
+     52            gpio_set(LDC_SCL,1);
+   \   00000020   0x2101             MOVS     R1,#+1
+   \   00000022   0x2040             MOVS     R0,#+64
+   \   00000024   0x.... 0x....      BL       gpio_set
+     53            DELAY_US(300);
+   \   00000028   0x....             LDR.N    R0,??DataTable6
+   \   0000002A   0x6800             LDR      R0,[R0, #+0]
+   \   0000002C   0xF44F 0x7196      MOV      R1,#+300
+   \   00000030   0x4348             MULS     R0,R1,R0
+   \   00000032   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000036   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000003A   0x.... 0x....      BL       systick_delay
+     54            gpio_init(LDC_SDA,GPI,1);
+   \   0000003E   0x2201             MOVS     R2,#+1
+   \   00000040   0x2100             MOVS     R1,#+0
+   \   00000042   0x2041             MOVS     R0,#+65
+   \   00000044   0x.... 0x....      BL       gpio_init
+     55            if(gpio_get(LDC_SDA)==0)
+   \   00000048   0x2041             MOVS     R0,#+65
+   \   0000004A   0x.... 0x....      BL       gpio_get
+   \   0000004E   0x2800             CMP      R0,#+0
+   \   00000050   0xD107             BNE.N    ??CACK_flag_0
+     56            {
+     57              ack_flag=1;
+   \   00000052   0x2001             MOVS     R0,#+1
+   \   00000054   0x0004             MOVS     R4,R0
+     58              gpio_init(LDC_SDA,GPO,0);
+   \   00000056   0x2200             MOVS     R2,#+0
+   \   00000058   0x2101             MOVS     R1,#+1
+   \   0000005A   0x2041             MOVS     R0,#+65
+   \   0000005C   0x.... 0x....      BL       gpio_init
+   \   00000060   0xE006             B.N      ??CACK_flag_1
+     59            }
+     60            else
+     61            {
+     62              ack_flag=0;
+   \                     ??CACK_flag_0: (+1)
+   \   00000062   0x2000             MOVS     R0,#+0
+   \   00000064   0x0004             MOVS     R4,R0
+     63              gpio_init(LDC_SDA,GPO,1);
+   \   00000066   0x2201             MOVS     R2,#+1
+   \   00000068   0x2101             MOVS     R1,#+1
+   \   0000006A   0x2041             MOVS     R0,#+65
+   \   0000006C   0x.... 0x....      BL       gpio_init
+     64            }
+     65            
+     66            gpio_set(LDC_SCL,0);
+   \                     ??CACK_flag_1: (+1)
+   \   00000070   0x2100             MOVS     R1,#+0
+   \   00000072   0x2040             MOVS     R0,#+64
+   \   00000074   0x.... 0x....      BL       gpio_set
+     67            return ack_flag;
+   \   00000078   0x0020             MOVS     R0,R4
+   \   0000007A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000007C   0xBD10             POP      {R4,PC}          ;; return
+     68          }
+     69          
+
+   \                                 In section .text, align 2, keep-with-next
+     70          void IIC_LDC_SendByte(int8 bdata)
+     71          {
+   \                     IIC_LDC_SendByte: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     72            unsigned char i=8;
+   \   00000004   0x2508             MOVS     R5,#+8
+     73            while(i--)
+   \                     ??IIC_LDC_SendByte_0: (+1)
+   \   00000006   0x0028             MOVS     R0,R5
+   \   00000008   0x1E45             SUBS     R5,R0,#+1
+   \   0000000A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000000C   0x2800             CMP      R0,#+0
+   \   0000000E   0xD036             BEQ.N    ??IIC_LDC_SendByte_1
+     74            {
+     75              gpio_set(LDC_SCL,0);
+   \   00000010   0x2100             MOVS     R1,#+0
+   \   00000012   0x2040             MOVS     R0,#+64
+   \   00000014   0x.... 0x....      BL       gpio_set
+     76              DELAY_US(200);
+   \   00000018   0x....             LDR.N    R0,??DataTable6
+   \   0000001A   0x6800             LDR      R0,[R0, #+0]
+   \   0000001C   0x21C8             MOVS     R1,#+200
+   \   0000001E   0x4348             MULS     R0,R1,R0
+   \   00000020   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000024   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000028   0x.... 0x....      BL       systick_delay
+     77              if((bdata&0x80)==0x80)
+   \   0000002C   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000002E   0x0620             LSLS     R0,R4,#+24
+   \   00000030   0xD503             BPL.N    ??IIC_LDC_SendByte_2
+     78                gpio_set(LDC_SDA,1);
+   \   00000032   0x2101             MOVS     R1,#+1
+   \   00000034   0x2041             MOVS     R0,#+65
+   \   00000036   0x.... 0x....      BL       gpio_set
+     79              if((bdata&0x80)==0x00)
+   \                     ??IIC_LDC_SendByte_2: (+1)
+   \   0000003A   0x0620             LSLS     R0,R4,#+24
+   \   0000003C   0xD403             BMI.N    ??IIC_LDC_SendByte_3
+     80                gpio_set(LDC_SDA,0);      
+   \   0000003E   0x2100             MOVS     R1,#+0
+   \   00000040   0x2041             MOVS     R0,#+65
+   \   00000042   0x.... 0x....      BL       gpio_set
+     81              bdata<<=1;
+   \                     ??IIC_LDC_SendByte_3: (+1)
+   \   00000046   0x0064             LSLS     R4,R4,#+1
+     82              DELAY_US(300);
+   \   00000048   0x....             LDR.N    R0,??DataTable6
+   \   0000004A   0x6800             LDR      R0,[R0, #+0]
+   \   0000004C   0xF44F 0x7196      MOV      R1,#+300
+   \   00000050   0x4348             MULS     R0,R1,R0
+   \   00000052   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000056   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   0000005A   0x.... 0x....      BL       systick_delay
+     83              gpio_set(LDC_SCL,1);
+   \   0000005E   0x2101             MOVS     R1,#+1
+   \   00000060   0x2040             MOVS     R0,#+64
+   \   00000062   0x.... 0x....      BL       gpio_set
+     84              DELAY_US(300);
+   \   00000066   0x....             LDR.N    R0,??DataTable6
+   \   00000068   0x6800             LDR      R0,[R0, #+0]
+   \   0000006A   0xF44F 0x7196      MOV      R1,#+300
+   \   0000006E   0x4348             MULS     R0,R1,R0
+   \   00000070   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000074   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000078   0x.... 0x....      BL       systick_delay
+   \   0000007C   0xE7C3             B.N      ??IIC_LDC_SendByte_0
+     85            }
+     86            gpio_set(LDC_SCL,0);
+   \                     ??IIC_LDC_SendByte_1: (+1)
+   \   0000007E   0x2100             MOVS     R1,#+0
+   \   00000080   0x2040             MOVS     R0,#+64
+   \   00000082   0x.... 0x....      BL       gpio_set
+     87          }
+   \   00000086   0xBD31             POP      {R0,R4,R5,PC}    ;; return
+
+   \                                 In section .text, align 2, keep-with-next
+     88          uint8 IIC_LDC_ReceiveByte(void)
+     89          {
+   \                     IIC_LDC_ReceiveByte: (+1)
+   \   00000000   0xB538             PUSH     {R3-R5,LR}
+     90            uint8 i,data=0;
+   \   00000002   0x2500             MOVS     R5,#+0
+     91            gpio_set(LDC_SDA,1);
+   \   00000004   0x2101             MOVS     R1,#+1
+   \   00000006   0x2041             MOVS     R0,#+65
+   \   00000008   0x.... 0x....      BL       gpio_set
+     92            for(i=0;i<8;i++)
+   \   0000000C   0x2000             MOVS     R0,#+0
+   \   0000000E   0x0004             MOVS     R4,R0
+   \                     ??IIC_LDC_ReceiveByte_0: (+1)
+   \   00000010   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000012   0x2C08             CMP      R4,#+8
+   \   00000014   0xDA2D             BGE.N    ??IIC_LDC_ReceiveByte_1
+     93            {
+     94              data<<=1;
+   \   00000016   0x006D             LSLS     R5,R5,#+1
+     95              gpio_set(LDC_SCL,0);
+   \   00000018   0x2100             MOVS     R1,#+0
+   \   0000001A   0x2040             MOVS     R0,#+64
+   \   0000001C   0x.... 0x....      BL       gpio_set
+     96              DELAY_US(300);
+   \   00000020   0x....             LDR.N    R0,??DataTable6
+   \   00000022   0x6800             LDR      R0,[R0, #+0]
+   \   00000024   0xF44F 0x7196      MOV      R1,#+300
+   \   00000028   0x4348             MULS     R0,R1,R0
+   \   0000002A   0xF44F 0x717A      MOV      R1,#+1000
+   \   0000002E   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000032   0x.... 0x....      BL       systick_delay
+     97              gpio_set(LDC_SCL,1);
+   \   00000036   0x2101             MOVS     R1,#+1
+   \   00000038   0x2040             MOVS     R0,#+64
+   \   0000003A   0x.... 0x....      BL       gpio_set
+     98              gpio_ddr(LDC_SDA,GPI);
+   \   0000003E   0x2100             MOVS     R1,#+0
+   \   00000040   0x2041             MOVS     R0,#+65
+   \   00000042   0x.... 0x....      BL       gpio_ddr
+     99              DELAY_US(300);
+   \   00000046   0x....             LDR.N    R0,??DataTable6
+   \   00000048   0x6800             LDR      R0,[R0, #+0]
+   \   0000004A   0xF44F 0x7196      MOV      R1,#+300
+   \   0000004E   0x4348             MULS     R0,R1,R0
+   \   00000050   0xF44F 0x717A      MOV      R1,#+1000
+   \   00000054   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000058   0x.... 0x....      BL       systick_delay
+    100              data|=gpio_get(LDC_SDA);
+   \   0000005C   0x2041             MOVS     R0,#+65
+   \   0000005E   0x.... 0x....      BL       gpio_get
+   \   00000062   0x4328             ORRS     R0,R0,R5
+   \   00000064   0x0005             MOVS     R5,R0
+    101              gpio_ddr(LDC_SDA,GPO);
+   \   00000066   0x2101             MOVS     R1,#+1
+   \   00000068   0x2041             MOVS     R0,#+65
+   \   0000006A   0x.... 0x....      BL       gpio_ddr
+    102            }
+   \   0000006E   0x1C64             ADDS     R4,R4,#+1
+   \   00000070   0xE7CE             B.N      ??IIC_LDC_ReceiveByte_0
+    103            gpio_set(LDC_SCL,0);
+   \                     ??IIC_LDC_ReceiveByte_1: (+1)
+   \   00000072   0x2100             MOVS     R1,#+0
+   \   00000074   0x2040             MOVS     R0,#+64
+   \   00000076   0x.... 0x....      BL       gpio_set
+    104            return data;
+   \   0000007A   0x0028             MOVS     R0,R5
+   \   0000007C   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000007E   0xBD32             POP      {R1,R4,R5,PC}    ;; return
+    105          }
+    106          
+
+   \                                 In section .text, align 2, keep-with-next
+    107          uint8 IIC_LDC_write_byte(uint8 cadd,uint8 data_address,uint16 data_byte)
+    108          { 
+   \                     IIC_LDC_write_byte: (+1)
+   \   00000000   0xE92D 0x41F0      PUSH     {R4-R8,LR}
+   \   00000004   0x0004             MOVS     R4,R0
+   \   00000006   0x000D             MOVS     R5,R1
+   \   00000008   0x0016             MOVS     R6,R2
+    109            uint8 data_byte1,data_byte2;
+    110            data_byte1=(uint8)((data_byte)>>8);
+   \   0000000A   0xB2B6             UXTH     R6,R6            ;; ZeroExt  R6,R6,#+16,#+16
+   \   0000000C   0x0A30             LSRS     R0,R6,#+8
+   \   0000000E   0x0007             MOVS     R7,R0
+    111            data_byte2=(uint8)data_byte;
+   \   00000010   0x0030             MOVS     R0,R6
+   \   00000012   0x4680             MOV      R8,R0
+    112            IIC_LDC_Start();
+   \   00000014   0x.... 0x....      BL       IIC_LDC_Start
+    113            IIC_LDC_SendByte((cadd<<1));//xie
+   \   00000018   0x0060             LSLS     R0,R4,#+1
+   \   0000001A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001C   0x.... 0x....      BL       IIC_LDC_SendByte
+    114            if(CACK_flag()==0)
+   \   00000020   0x.... 0x....      BL       CACK_flag
+   \   00000024   0x2800             CMP      R0,#+0
+   \   00000026   0xD101             BNE.N    ??IIC_LDC_write_byte_0
+    115            {
+    116              return 0;
+   \   00000028   0x2000             MOVS     R0,#+0
+   \   0000002A   0xE020             B.N      ??IIC_LDC_write_byte_1
+    117            }
+    118            IIC_LDC_SendByte(data_address);
+   \                     ??IIC_LDC_write_byte_0: (+1)
+   \   0000002C   0x0028             MOVS     R0,R5
+   \   0000002E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000030   0x.... 0x....      BL       IIC_LDC_SendByte
+    119            if(CACK_flag()==0)
+   \   00000034   0x.... 0x....      BL       CACK_flag
+   \   00000038   0x2800             CMP      R0,#+0
+   \   0000003A   0xD101             BNE.N    ??IIC_LDC_write_byte_2
+    120            {
+    121              return 0;
+   \   0000003C   0x2000             MOVS     R0,#+0
+   \   0000003E   0xE016             B.N      ??IIC_LDC_write_byte_1
+    122            }
+    123            IIC_LDC_SendByte(data_byte1);
+   \                     ??IIC_LDC_write_byte_2: (+1)
+   \   00000040   0x0038             MOVS     R0,R7
+   \   00000042   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000044   0x.... 0x....      BL       IIC_LDC_SendByte
+    124            if(CACK_flag()==0)
+   \   00000048   0x.... 0x....      BL       CACK_flag
+   \   0000004C   0x2800             CMP      R0,#+0
+   \   0000004E   0xD101             BNE.N    ??IIC_LDC_write_byte_3
+    125            {
+    126              return 0;
+   \   00000050   0x2000             MOVS     R0,#+0
+   \   00000052   0xE00C             B.N      ??IIC_LDC_write_byte_1
+    127            }
+    128            IIC_LDC_SendByte(data_byte2);
+   \                     ??IIC_LDC_write_byte_3: (+1)
+   \   00000054   0x4640             MOV      R0,R8
+   \   00000056   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000058   0x.... 0x....      BL       IIC_LDC_SendByte
+    129            if(CACK_flag()==0)
+   \   0000005C   0x.... 0x....      BL       CACK_flag
+   \   00000060   0x2800             CMP      R0,#+0
+   \   00000062   0xD101             BNE.N    ??IIC_LDC_write_byte_4
+    130            {
+    131              return 0;
+   \   00000064   0x2000             MOVS     R0,#+0
+   \   00000066   0xE002             B.N      ??IIC_LDC_write_byte_1
+    132            }
+    133            IIC_LDC_Stop();
+   \                     ??IIC_LDC_write_byte_4: (+1)
+   \   00000068   0x.... 0x....      BL       IIC_LDC_Stop
+    134            return 1;
+   \   0000006C   0x2001             MOVS     R0,#+1
+   \                     ??IIC_LDC_write_byte_1: (+1)
+   \   0000006E   0xE8BD 0x81F0      POP      {R4-R8,PC}       ;; return
+    135          }
+    136          
+
+   \                                 In section .text, align 2, keep-with-next
+    137          uint16 IIC_LDC_read_byte(uint8 cadd,uint8 data_address)
+    138          {
+   \                     IIC_LDC_read_byte: (+1)
+   \   00000000   0xE92D 0x41F0      PUSH     {R4-R8,LR}
+   \   00000004   0x0004             MOVS     R4,R0
+   \   00000006   0x000D             MOVS     R5,R1
+    139            int temp;
+    140            uint16 temp1,temp2;
+    141            
+    142            IIC_LDC_Start();
+   \   00000008   0x.... 0x....      BL       IIC_LDC_Start
+    143            IIC_LDC_SendByte((cadd<<1));//xie
+   \   0000000C   0x0060             LSLS     R0,R4,#+1
+   \   0000000E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000010   0x.... 0x....      BL       IIC_LDC_SendByte
+    144            if(CACK_flag()==0)
+   \   00000014   0x.... 0x....      BL       CACK_flag
+   \   00000018   0x2800             CMP      R0,#+0
+   \   0000001A   0xD101             BNE.N    ??IIC_LDC_read_byte_0
+    145            {
+    146              return 0;
+   \   0000001C   0x2000             MOVS     R0,#+0
+   \   0000001E   0xE02A             B.N      ??IIC_LDC_read_byte_1
+    147            }
+    148            IIC_LDC_SendByte(data_address);
+   \                     ??IIC_LDC_read_byte_0: (+1)
+   \   00000020   0x0028             MOVS     R0,R5
+   \   00000022   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000024   0x.... 0x....      BL       IIC_LDC_SendByte
+    149            if(CACK_flag()==0)
+   \   00000028   0x.... 0x....      BL       CACK_flag
+   \   0000002C   0x2800             CMP      R0,#+0
+   \   0000002E   0xD101             BNE.N    ??IIC_LDC_read_byte_2
+    150            {
+    151              return 0;
+   \   00000030   0x2000             MOVS     R0,#+0
+   \   00000032   0xE020             B.N      ??IIC_LDC_read_byte_1
+    152            }
+    153            IIC_LDC_Start();
+   \                     ??IIC_LDC_read_byte_2: (+1)
+   \   00000034   0x.... 0x....      BL       IIC_LDC_Start
+    154            IIC_LDC_SendByte((cadd<<1)|0x01);//du
+   \   00000038   0x0060             LSLS     R0,R4,#+1
+   \   0000003A   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   0000003E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000040   0x.... 0x....      BL       IIC_LDC_SendByte
+    155            if(CACK_flag()==0)
+   \   00000044   0x.... 0x....      BL       CACK_flag
+   \   00000048   0x2800             CMP      R0,#+0
+   \   0000004A   0xD101             BNE.N    ??IIC_LDC_read_byte_3
+    156            {
+    157              return 0;
+   \   0000004C   0x2000             MOVS     R0,#+0
+   \   0000004E   0xE012             B.N      ??IIC_LDC_read_byte_1
+    158            }
+    159            temp1=(uint16)IIC_LDC_ReceiveByte();
+   \                     ??IIC_LDC_read_byte_3: (+1)
+   \   00000050   0x.... 0x....      BL       IIC_LDC_ReceiveByte
+   \   00000054   0x0007             MOVS     R7,R0
+    160            Send_Ack();
+   \   00000056   0x.... 0x....      BL       Send_Ack
+    161            temp2=(uint16)IIC_LDC_ReceiveByte();
+   \   0000005A   0x.... 0x....      BL       IIC_LDC_ReceiveByte
+   \   0000005E   0x4680             MOV      R8,R0
+    162            Send_NoAck();
+   \   00000060   0x.... 0x....      BL       Send_NoAck
+    163            IIC_LDC_Stop();
+   \   00000064   0x.... 0x....      BL       IIC_LDC_Stop
+    164            temp=(temp1<<8)+temp2;
+   \   00000068   0xB2BF             UXTH     R7,R7            ;; ZeroExt  R7,R7,#+16,#+16
+   \   0000006A   0x0238             LSLS     R0,R7,#+8
+   \   0000006C   0xFA10 0xF088      UXTAH    R0,R0,R8
+   \   00000070   0x0006             MOVS     R6,R0
+    165            //temp=(temp2<<8)+temp1;
+    166            return temp;
+   \   00000072   0x0030             MOVS     R0,R6
+   \   00000074   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \                     ??IIC_LDC_read_byte_1: (+1)
+   \   00000076   0xE8BD 0x81F0      POP      {R4-R8,PC}       ;; return
+    167          }
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable6:
+   \   00000000   0x........         DC32     core_clk_khz
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   CACK_flag
+         8   -> gpio_get
+         8   -> gpio_init
+         8   -> gpio_set
+         8   -> systick_delay
+      16   IIC_LDC_ReceiveByte
+        16   -> gpio_ddr
+        16   -> gpio_get
+        16   -> gpio_set
+        16   -> systick_delay
+      16   IIC_LDC_SendByte
+        16   -> gpio_set
+        16   -> systick_delay
+       8   IIC_LDC_Start
+         8   -> gpio_set
+         8   -> systick_delay
+       8   IIC_LDC_Stop
+         8   -> gpio_set
+         8   -> systick_delay
+      24   IIC_LDC_read_byte
+        24   -> CACK_flag
+        24   -> IIC_LDC_ReceiveByte
+        24   -> IIC_LDC_SendByte
+        24   -> IIC_LDC_Start
+        24   -> IIC_LDC_Stop
+        24   -> Send_Ack
+        24   -> Send_NoAck
+      24   IIC_LDC_write_byte
+        24   -> CACK_flag
+        24   -> IIC_LDC_SendByte
+        24   -> IIC_LDC_Start
+        24   -> IIC_LDC_Stop
+       8   Send_Ack
+         8   -> gpio_set
+         8   -> systick_delay
+       8   Send_NoAck
+         8   -> gpio_set
+         8   -> systick_delay
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable6
+     126  CACK_flag
+     128  IIC_LDC_ReceiveByte
+     136  IIC_LDC_SendByte
+      80  IIC_LDC_Start
+      80  IIC_LDC_Stop
+     122  IIC_LDC_read_byte
+     114  IIC_LDC_write_byte
+     102  Send_Ack
+      72  Send_NoAck
+
+ 
+ 964 bytes in section .text
+ 
+ 964 bytes of CODE memory
+
+Errors: none
+Warnings: none

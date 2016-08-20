@@ -1,0 +1,360 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:31
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_wdog.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_wdog.c -D
+#        DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\MK60_wdog.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\MK60_wdog.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_wdog.c
+      1          /*!
+      2           *     COPYRIGHT NOTICE
+      3           *     Copyright (c) 2013,山外科技
+      4           *     All rights reserved.
+      5           *     技术讨论：山外论坛 http://www.vcan123.com
+      6           *
+      7           *     除注明出处外，以下所有内容版权均属山外科技所有，未经允许，不得用于商业用途，
+      8           *     修改内容时必须保留山外科技的版权声明。
+      9           *
+     10           * @file       MK60_wdog.c
+     11           * @brief      看门狗驱动函数
+     12           * @author     山外科技
+     13           * @version    v5.1
+     14           * @date       2014-04-25
+     15           */
+     16          
+     17          #include "common.h"
+     18          #include "MK60_wdog.h"
+     19          
+     20          //内部函数声明
+     21          static void wdog_unlock(void);          //看门狗解锁
+     22          
+     23          /*!
+     24           *  @brief      初始化看门狗，设置喂狗时间
+     25           *  @param      cnt     喂狗时间（单位为 ms）
+     26           *  @since      v5.0
+     27           */
+
+   \                                 In section .text, align 2, keep-with-next
+     28          void wdog_init_ms(uint32 ms)
+     29          {
+   \                     wdog_init_ms: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     30              ASSERT(ms >= 4);                                //断言，计数时间最小为4个时钟周期（WDOG_TOVALL里说明）
+   \   00000004   0x2C04             CMP      R4,#+4
+   \   00000006   0xD203             BCS.N    ??wdog_init_ms_0
+   \   00000008   0x211E             MOVS     R1,#+30
+   \   0000000A   0x....             LDR.N    R0,??DataTable4
+   \   0000000C   0x.... 0x....      BL       assert_failed
+     31          
+     32              wdog_unlock();                                  //解锁看门狗，这样才能配置看门狗
+   \                     ??wdog_init_ms_0: (+1)
+   \   00000010   0x.... 0x....      BL       wdog_unlock
+     33          
+     34              WDOG_PRESC = WDOG_PRESC_PRESCVAL(0);            //设置分频系数 = PRESCVAL +1(PRESCVAL取值范围为0~7)
+   \   00000014   0x2000             MOVS     R0,#+0
+   \   00000016   0x....             LDR.N    R1,??DataTable4_1  ;; 0x40052016
+   \   00000018   0x8008             STRH     R0,[R1, #+0]
+     35          
+     36              WDOG_TOVALH = ms >> 16;                         //设置喂狗时间
+   \   0000001A   0x0C20             LSRS     R0,R4,#+16
+   \   0000001C   0x....             LDR.N    R1,??DataTable4_2  ;; 0x40052004
+   \   0000001E   0x8008             STRH     R0,[R1, #+0]
+     37              WDOG_TOVALL = (uint16)ms;
+   \   00000020   0x....             LDR.N    R0,??DataTable4_3  ;; 0x40052006
+   \   00000022   0x8004             STRH     R4,[R0, #+0]
+     38          
+     39              WDOG_STCTRLH = ( 0
+     40                              | WDOG_STCTRLH_WDOGEN_MASK     //WDOGEN置位，使能 看门狗
+     41                              //| WDOG_STCTRLH_CLKSRC_MASK   //看门狗时钟选择（0为 LDO ，1为bus 时钟）
+     42                              | WDOG_STCTRLH_ALLOWUPDATE_MASK
+     43                              | WDOG_STCTRLH_STOPEN_MASK
+     44                              | WDOG_STCTRLH_WAITEN_MASK
+     45                              | WDOG_STCTRLH_STNDBYEN_MASK
+     46                              //|
+     47                              );
+   \   00000024   0xF240 0x10D1      MOVW     R0,#+465
+   \   00000028   0x....             LDR.N    R1,??DataTable4_4  ;; 0x40052000
+   \   0000002A   0x8008             STRH     R0,[R1, #+0]
+     48          }
+   \   0000002C   0xBD10             POP      {R4,PC}          ;; return
+     49          
+     50          
+     51          /*!
+     52           *  @brief      启用看门狗
+     53           *  @since      v5.0
+     54           */
+
+   \                                 In section .text, align 2, keep-with-next
+     55          void wdog_enable(void)
+     56          {
+   \                     wdog_enable: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     57              wdog_unlock();                                  //解锁看门狗，这样才能配置看门狗
+   \   00000002   0x.... 0x....      BL       wdog_unlock
+     58          
+     59              WDOG_STCTRLH |= WDOG_STCTRLH_WDOGEN_MASK;       //WDOGEN置位，使能 看门狗
+   \   00000006   0x....             LDR.N    R0,??DataTable4_4  ;; 0x40052000
+   \   00000008   0x8800             LDRH     R0,[R0, #+0]
+   \   0000000A   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   0000000E   0x....             LDR.N    R1,??DataTable4_4  ;; 0x40052000
+   \   00000010   0x8008             STRH     R0,[R1, #+0]
+     60          }
+   \   00000012   0xBD01             POP      {R0,PC}          ;; return
+     61          
+     62          
+     63          /*!
+     64           *  @brief      禁用看门狗
+     65           *  @since      v5.0
+     66           */
+
+   \                                 In section .text, align 2, keep-with-next
+     67          void wdog_disable(void)
+     68          {
+   \                     wdog_disable: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     69              wdog_unlock();                                  //解锁看门狗，这样才能配置看门狗
+   \   00000002   0x.... 0x....      BL       wdog_unlock
+     70          
+     71              WDOG_STCTRLH &= ~WDOG_STCTRLH_WDOGEN_MASK;      //WDOGEN清0，禁用 看门狗
+   \   00000006   0x....             LDR.N    R0,??DataTable4_4  ;; 0x40052000
+   \   00000008   0x8800             LDRH     R0,[R0, #+0]
+   \   0000000A   0xF64F 0x71FE      MOVW     R1,#+65534
+   \   0000000E   0x4008             ANDS     R0,R1,R0
+   \   00000010   0x....             LDR.N    R1,??DataTable4_4  ;; 0x40052000
+   \   00000012   0x8008             STRH     R0,[R1, #+0]
+     72          }
+   \   00000014   0xBD01             POP      {R0,PC}          ;; return
+     73          
+     74          /*!
+     75           *  @brief      喂狗
+     76           *  @since      v5.0
+     77           */
+
+   \                                 In section .text, align 2, keep-with-next
+     78          void wdog_feed(void)
+     79          {
+     80              //此函数不能单步执行
+     81          
+     82              //WDOG_REFRESH 寄存器里描述，连续向此寄存器写入0xA602 、0xB480即可解锁，
+     83              //中间不得超过20个时钟周期，因此需要先关总中断
+     84          
+     85              uint8 tmp = __get_BASEPRI();    //用于返回寄存器 PRIMASK 的值(1bit)
+   \                     wdog_feed: (+1)
+   \   00000000   0xF3EF 0x8011      MRS      R0,BASEPRI
+     86                                              //1表示关中断，0表示开中断
+     87          
+     88              //关闭总中断，否则有可能没法在 20个周期内连续写入 WDOG_UNLOCK
+     89              DisableInterrupts;
+   \   00000004   0xB672             CPSID    I
+     90          
+     91              //更新 看门狗（喂狗）
+     92              WDOG_REFRESH = 0xA602;
+   \   00000006   0xF24A 0x6102      MOVW     R1,#+42498
+   \   0000000A   0x....             LDR.N    R2,??DataTable4_5  ;; 0x4005200c
+   \   0000000C   0x8011             STRH     R1,[R2, #+0]
+     93              WDOG_REFRESH = 0xB480;
+   \   0000000E   0xF24B 0x4180      MOVW     R1,#+46208
+   \   00000012   0x....             LDR.N    R2,??DataTable4_5  ;; 0x4005200c
+   \   00000014   0x8011             STRH     R1,[R2, #+0]
+     94          
+     95              if(tmp == 0)
+   \   00000016   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000018   0x2800             CMP      R0,#+0
+   \   0000001A   0xD100             BNE.N    ??wdog_feed_0
+     96              {
+     97                  EnableInterrupts;
+   \   0000001C   0xB662             CPSIE    I
+     98              }
+     99          }
+   \                     ??wdog_feed_0: (+1)
+   \   0000001E   0x4770             BX       LR               ;; return
+    100          
+    101          /*!
+    102           *  @brief      解锁看门狗
+    103           *  @since      v5.0
+    104           */
+
+   \                                 In section .text, align 2, keep-with-next
+    105          void wdog_unlock(void)
+    106          {
+    107              //此函数不能单步执行
+    108          
+    109              //WDOG_UNLOCK 寄存器里描述，连续向此寄存器写入0xC520、0xD928即可解锁，
+    110              //中间不得超过20个时钟周期，因此需要先关总中断
+    111              uint8 tmp = __get_BASEPRI();        //用于返回寄存器 PRIMASK 的值(1bit)
+   \                     wdog_unlock: (+1)
+   \   00000000   0xF3EF 0x8011      MRS      R0,BASEPRI
+    112                                                  //1表示关中断，0表示开中断
+    113          
+    114              //关闭总中断，否则有可能没法在 20个周期内连续写入 WDOG_UNLOCK
+    115              DisableInterrupts;
+   \   00000004   0xB672             CPSID    I
+    116          
+    117              //解锁 看门狗
+    118              WDOG_UNLOCK = 0xC520;
+   \   00000006   0xF24C 0x5120      MOVW     R1,#+50464
+   \   0000000A   0x....             LDR.N    R2,??DataTable4_6  ;; 0x4005200e
+   \   0000000C   0x8011             STRH     R1,[R2, #+0]
+    119              WDOG_UNLOCK = 0xD928;
+   \   0000000E   0xF64D 0x1128      MOVW     R1,#+55592
+   \   00000012   0x....             LDR.N    R2,??DataTable4_6  ;; 0x4005200e
+   \   00000014   0x8011             STRH     R1,[R2, #+0]
+    120          
+    121              if(tmp == 0)
+   \   00000016   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000018   0x2800             CMP      R0,#+0
+   \   0000001A   0xD100             BNE.N    ??wdog_unlock_0
+    122              {
+    123                  EnableInterrupts;
+   \   0000001C   0xB662             CPSIE    I
+    124              }
+    125          }
+   \                     ??wdog_unlock_0: (+1)
+   \   0000001E   0x4770             BX       LR               ;; return
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4:
+   \   00000000   0x........         DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_1:
+   \   00000000   0x40052016         DC32     0x40052016
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_2:
+   \   00000000   0x40052004         DC32     0x40052004
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_3:
+   \   00000000   0x40052006         DC32     0x40052006
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_4:
+   \   00000000   0x40052000         DC32     0x40052000
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_5:
+   \   00000000   0x4005200C         DC32     0x4005200c
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_6:
+   \   00000000   0x4005200E         DC32     0x4005200e
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \   00000000   0x44 0x3A          DC8 44H, 3AH, 5CH, 53H, 74H, 75H, 64H, 79H
+   \              0x5C 0x53    
+   \              0x74 0x75    
+   \              0x64 0x79    
+   \   00000008   0x5C 0x32          DC8 5CH, 32H, 30H, 31H, 36H, 0B5H, 0E7H, 0D7H
+   \              0x30 0x31    
+   \              0x36 0xB5    
+   \              0xE7 0xD7    
+   \   00000010   0xD3 0xC9          DC8 0D3H, 0C9H, 0E8H, 0BCH, 0C6H, 0B4H, 0F3H, 0C8H
+   \              0xE8 0xBC    
+   \              0xC6 0xB4    
+   \              0xF3 0xC8    
+   \   00000018   0xFC 0x5C          DC8 0FCH, 5CH, 54H, 69H, 5CH, 0B5H, 0E7H, 0C8H
+   \              0x54 0x69    
+   \              0x5C 0xB5    
+   \              0xE7 0xC8    
+   \   00000020   0xFC 0xB1          DC8 0FCH, 0B1H, 0B8H, 0D3H, 0C3H, 0B5H, 0D7H, 0B2H
+   \              0xB8 0xD3    
+   \              0xC3 0xB5    
+   \              0xD7 0xB2    
+   \   00000028   0xE3 0x5C          DC8 0E3H, 5CH, 43H, 68H, 69H, 70H, 5CH, 73H
+   \              0x43 0x68    
+   \              0x69 0x70    
+   \              0x5C 0x73    
+   \   00000030   0x72 0x63          DC8 72H, 63H, 5CH, 4DH, 4BH, 36H, 30H, 5FH
+   \              0x5C 0x4D    
+   \              0x4B 0x36    
+   \              0x30 0x5F    
+   \   00000038   0x77 0x64          DC8 77H, 64H, 6FH, 67H, 2EH, 63H, 0
+   \              0x6F 0x67    
+   \              0x2E 0x63    
+   \              0x00         
+   \   0000003F   0x00               DC8 0
+    126          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   wdog_disable
+         8   -> wdog_unlock
+       8   wdog_enable
+         8   -> wdog_unlock
+       0   wdog_feed
+       8   wdog_init_ms
+         8   -> assert_failed
+         8   -> wdog_unlock
+       0   wdog_unlock
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+      64  ?_0
+      22  wdog_disable
+      20  wdog_enable
+      32  wdog_feed
+      46  wdog_init_ms
+      32  wdog_unlock
+
+ 
+  64 bytes in section .rodata
+ 180 bytes in section .text
+ 
+ 180 bytes of CODE  memory
+  64 bytes of CONST memory
+
+Errors: none
+Warnings: none

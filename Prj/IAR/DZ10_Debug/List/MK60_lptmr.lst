@@ -1,0 +1,1044 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:28
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_lptmr.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_lptmr.c -D
+#        DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\MK60_lptmr.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\MK60_lptmr.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_lptmr.c
+      1          /*!
+      2           *     COPYRIGHT NOTICE
+      3           *     Copyright (c) 2013,山外科技
+      4           *     All rights reserved.
+      5           *     技术讨论：山外论坛 http://www.vcan123.com
+      6           *
+      7           *     除注明出处外，以下所有内容版权均属山外科技所有，未经允许，不得用于商业用途，
+      8           *     修改内容时必须保留山外科技的版权声明。
+      9           *
+     10           * @file       MK60_lptmr.c
+     11           * @brief      lptmr驱动函数，包括延时，脉冲计数（定时功能待实现）
+     12           * @author     山外科技
+     13           * @version    v5.0
+     14           * @date       2013-06-26
+     15           */
+     16          
+     17          
+     18          #include "common.h"
+     19          #include "MK60_lptmr.h"
+     20          
+     21          /*!
+     22           *  @brief      LPTMR脉冲计数初始化
+     23           *  @param      LPT0_ALTn   LPTMR脉冲计数管脚
+     24           *  @param      count       LPTMR脉冲比较值
+     25           *  @param      LPT_CFG     LPTMR脉冲计数方式：上升沿计数或下降沿计数
+     26           *  @since      v5.0
+     27           *  Sample usage:       lptmr_pulse_init(LPT0_ALT1,0xFFFF,LPT_Rising);     // LPTMR 脉冲计数，计数0xFFFF后触发中断请求（需要开中断才执行中断服务函数），上升沿捕捉
+     28           */
+
+   \                                 In section .text, align 2, keep-with-next
+     29          void lptmr_pulse_init(LPT0_ALTn altn, uint16 count, LPT_CFG cfg)
+     30          {
+   \                     lptmr_pulse_init: (+1)
+   \   00000000   0xB570             PUSH     {R4-R6,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+   \   00000004   0x000D             MOVS     R5,R1
+   \   00000006   0x0016             MOVS     R6,R2
+     31          
+     32          #if  defined(MK60F15)
+     33              OSC0_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+     34          #endif
+     35          
+     36              // 开启模块时钟
+     37              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;                        //使能LPT模块时钟
+   \   00000008   0x....             LDR.N    R0,??DataTable12  ;; 0x40048038
+   \   0000000A   0x6800             LDR      R0,[R0, #+0]
+   \   0000000C   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   00000010   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   00000012   0x6008             STR      R0,[R1, #+0]
+     38          
+     39              //设置输入管脚
+     40              if(altn == LPT0_ALT1)
+   \   00000014   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000016   0x2C01             CMP      R4,#+1
+   \   00000018   0xD105             BNE.N    ??lptmr_pulse_init_0
+     41              {
+     42                  port_init(PTA19, ALT6 );            //在PTA19上使用 ALT6
+   \   0000001A   0xF44F 0x61C0      MOV      R1,#+1536
+   \   0000001E   0x2013             MOVS     R0,#+19
+   \   00000020   0x.... 0x....      BL       port_init
+   \   00000024   0xE012             B.N      ??lptmr_pulse_init_1
+     43              }
+     44              else if(altn == LPT0_ALT2)
+   \                     ??lptmr_pulse_init_0: (+1)
+   \   00000026   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000028   0x2C02             CMP      R4,#+2
+   \   0000002A   0xD105             BNE.N    ??lptmr_pulse_init_2
+     45              {
+     46                  port_init(PTC5, ALT4 );             //在PTC5上使用 ALT4
+   \   0000002C   0xF44F 0x6180      MOV      R1,#+1024
+   \   00000030   0x2045             MOVS     R0,#+69
+   \   00000032   0x.... 0x....      BL       port_init
+   \   00000036   0xE009             B.N      ??lptmr_pulse_init_1
+     47              }
+     48              else                                    //不可能发生事件
+     49              {
+     50                  ASSERT((altn == LPT0_ALT1 ) || (altn == LPT0_ALT2 ));   //设置管脚有误？
+   \                     ??lptmr_pulse_init_2: (+1)
+   \   00000038   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000003A   0x2C01             CMP      R4,#+1
+   \   0000003C   0xD006             BEQ.N    ??lptmr_pulse_init_1
+   \   0000003E   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000040   0x2C02             CMP      R4,#+2
+   \   00000042   0xD003             BEQ.N    ??lptmr_pulse_init_1
+   \   00000044   0x2132             MOVS     R1,#+50
+   \   00000046   0x....             LDR.N    R0,??DataTable12_1
+   \   00000048   0x.... 0x....      BL       assert_failed
+     51              }
+     52          
+     53              // 清状态寄存器
+     54              LPTMR0_CSR = 0x00;                                          //先关了LPT，这样才能设置时钟分频,清空计数值等
+   \                     ??lptmr_pulse_init_1: (+1)
+   \   0000004C   0x2000             MOVS     R0,#+0
+   \   0000004E   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000050   0x6008             STR      R0,[R1, #+0]
+     55          
+     56          #if defined(MK60DZ10)
+     57              //选择时钟源
+     58              LPTMR0_PSR  =   ( 0
+     59                                | LPTMR_PSR_PCS(1)                  //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+     60                                | LPTMR_PSR_PBYP_MASK               //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+     61                                //| LPTMR_PSR_PRESCALE(1)           //预分频值 = 2^(n+1) ,n = 0~ 0xF
+     62                              );
+   \   00000052   0x2005             MOVS     R0,#+5
+   \   00000054   0x....             LDR.N    R1,??DataTable12_3  ;; 0x40040004
+   \   00000056   0x6008             STR      R0,[R1, #+0]
+     63          #elif defined(MK60F15)
+     64              //选择时钟源
+     65              LPTMR0_PSR  =   ( 0
+     66                                | LPTMR_PSR_PCS(3)          //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+     67                                //| LPTMR_PSR_PBYP_MASK     //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+     68                                | LPTMR_PSR_PRESCALE(4)     //预分频值 = 2^(n+1) ,n = 0~ 0xF
+     69                              );
+     70          #endif
+     71          
+     72              // 设置累加计数值
+     73              LPTMR0_CMR  =   LPTMR_CMR_COMPARE(count);                   //设置比较值
+   \   00000058   0xB2AD             UXTH     R5,R5            ;; ZeroExt  R5,R5,#+16,#+16
+   \   0000005A   0x....             LDR.N    R0,??DataTable12_4  ;; 0x40040008
+   \   0000005C   0x6005             STR      R5,[R0, #+0]
+     74          
+     75              // 管脚设置、使能中断
+     76              LPTMR0_CSR  =  (0
+     77                              | LPTMR_CSR_TPS(altn)       // 选择输入管脚 选择
+     78                              | LPTMR_CSR_TMS_MASK        // 选择脉冲计数 (注释了表示时间计数模式)
+     79                              | ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+     80                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+     81                              | LPTMR_CSR_TIE_MASK        //中断使能
+     82                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+     83                             );
+   \   0000005E   0xB2F6             UXTB     R6,R6            ;; ZeroExt  R6,R6,#+24,#+24
+   \   00000060   0x2E01             CMP      R6,#+1
+   \   00000062   0xD101             BNE.N    ??lptmr_pulse_init_3
+   \   00000064   0x2008             MOVS     R0,#+8
+   \   00000066   0xE000             B.N      ??lptmr_pulse_init_4
+   \                     ??lptmr_pulse_init_3: (+1)
+   \   00000068   0x2000             MOVS     R0,#+0
+   \                     ??lptmr_pulse_init_4: (+1)
+   \   0000006A   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000006C   0x0121             LSLS     R1,R4,#+4
+   \   0000006E   0xF011 0x0130      ANDS     R1,R1,#0x30
+   \   00000072   0x4308             ORRS     R0,R0,R1
+   \   00000074   0xF050 0x0043      ORRS     R0,R0,#0x43
+   \   00000078   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   0000007A   0x6008             STR      R0,[R1, #+0]
+     84          }
+   \   0000007C   0xBD70             POP      {R4-R6,PC}       ;; return
+     85          
+     86          /*!
+     87           *  @brief      获取LPTMR脉冲计数值
+     88           *  @return     脉冲计数值
+     89           *  @since      v5.0
+     90           *  Sample usage:       uint16 data = lptmr_pulse_get();  //获取脉冲计数值
+     91           */
+
+   \                                 In section .text, align 2, keep-with-next
+     92          uint16 lptmr_pulse_get(void)
+     93          {
+     94              uint16 data;
+     95              if(LPTMR0_CSR & LPTMR_CSR_TCF_MASK)     //已经溢出了
+   \                     lptmr_pulse_get: (+1)
+   \   00000000   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000002   0x6809             LDR      R1,[R1, #+0]
+   \   00000004   0x0609             LSLS     R1,R1,#+24
+   \   00000006   0xD503             BPL.N    ??lptmr_pulse_get_0
+     96              {
+     97          
+     98                  data = ~0;                          //返回 0xffffffff 表示错误
+   \   00000008   0xF64F 0x71FF      MOVW     R1,#+65535
+   \   0000000C   0x0008             MOVS     R0,R1
+   \   0000000E   0xE002             B.N      ??lptmr_pulse_get_1
+     99              }
+    100              else
+    101              {
+    102          #if defined(MK60F15)
+    103                  LPTMR0_CNR = 0;
+    104          #endif
+    105                  data = LPTMR0_CNR;
+   \                     ??lptmr_pulse_get_0: (+1)
+   \   00000010   0x....             LDR.N    R1,??DataTable12_5  ;; 0x4004000c
+   \   00000012   0x6809             LDR      R1,[R1, #+0]
+   \   00000014   0x0008             MOVS     R0,R1
+    106              }
+    107              return data;
+   \                     ??lptmr_pulse_get_1: (+1)
+   \   00000016   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \   00000018   0x4770             BX       LR               ;; return
+    108          }
+    109          
+    110          
+    111          /*!
+    112           *  @brief      清空LPTMR脉冲计数
+    113           *  @since      v5.0
+    114           *  Sample usage:       lptmr_counter_clean();          //清空LPTMR脉冲计数
+    115           */
+
+   \                                 In section .text, align 2, keep-with-next
+    116          void lptmr_pulse_clean(void)
+    117          {
+    118              LPTMR0_CSR  &= ~LPTMR_CSR_TEN_MASK;     //禁用LPT的时候就会自动清计数器的值
+   \                     lptmr_pulse_clean: (+1)
+   \   00000000   0x....             LDR.N    R0,??DataTable12_2  ;; 0x40040000
+   \   00000002   0x6800             LDR      R0,[R0, #+0]
+   \   00000004   0x0840             LSRS     R0,R0,#+1
+   \   00000006   0x0040             LSLS     R0,R0,#+1
+   \   00000008   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   0000000A   0x6008             STR      R0,[R1, #+0]
+    119              LPTMR0_CSR  |= LPTMR_CSR_TEN_MASK;
+   \   0000000C   0x....             LDR.N    R0,??DataTable12_2  ;; 0x40040000
+   \   0000000E   0x6800             LDR      R0,[R0, #+0]
+   \   00000010   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   00000014   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000016   0x6008             STR      R0,[R1, #+0]
+    120          }
+   \   00000018   0x4770             BX       LR               ;; return
+    121          
+    122          /*!
+    123           *  @brief      LPTMR延时函数（ms）
+    124           *  @param      ms          LPTMR延时时间(0~65535)
+    125           *  @since      v5.0
+    126           *  Sample usage:       lptmr_delay_ms(32);     // LPTMR 延时32ms
+    127           */
+
+   \                                 In section .text, align 2, keep-with-next
+    128          void lptmr_delay_ms(uint16 ms)
+    129          {
+    130              if(ms == 0)
+   \                     lptmr_delay_ms: (+1)
+   \   00000000   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \   00000002   0x2800             CMP      R0,#+0
+   \   00000004   0xD01B             BEQ.N    ??lptmr_delay_ms_0
+    131              {
+    132                  return;
+    133              }
+    134          
+    135              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;    //使能LPT模块时钟
+   \                     ??lptmr_delay_ms_1: (+1)
+   \   00000006   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   00000008   0x6809             LDR      R1,[R1, #+0]
+   \   0000000A   0xF051 0x0101      ORRS     R1,R1,#0x1
+   \   0000000E   0x....             LDR.N    R2,??DataTable12  ;; 0x40048038
+   \   00000010   0x6011             STR      R1,[R2, #+0]
+    136          
+    137              LPTMR0_CSR = 0x00;                      //先关了LPT，自动清计数器的值
+   \   00000012   0x2100             MOVS     R1,#+0
+   \   00000014   0x....             LDR.N    R2,??DataTable12_2  ;; 0x40040000
+   \   00000016   0x6011             STR      R1,[R2, #+0]
+    138          
+    139              LPTMR0_CMR = ms;                        //设置比较值，即延时时间
+   \   00000018   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \   0000001A   0x....             LDR.N    R1,??DataTable12_4  ;; 0x40040008
+   \   0000001C   0x6008             STR      R0,[R1, #+0]
+    140          
+    141              //选择时钟源
+    142              LPTMR0_PSR  =   ( 0
+    143                                | LPTMR_PSR_PCS(1)                  //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+    144                                | LPTMR_PSR_PBYP_MASK               //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+    145                                //| LPTMR_PSR_PRESCALE(1)           //预分频值 = 2^(n+1) ,n = 0~ 0xF
+    146                              );
+   \   0000001E   0x2105             MOVS     R1,#+5
+   \   00000020   0x....             LDR.N    R2,??DataTable12_3  ;; 0x40040004
+   \   00000022   0x6011             STR      R1,[R2, #+0]
+    147          
+    148              //使能 LPT
+    149              LPTMR0_CSR  =  (0
+    150                              //| LPTMR_CSR_TPS(1)        // 选择输入管脚 选择
+    151                              //| LPTMR_CSR_TMS_MASK      // 选择脉冲计数 (注释了表示时间计数模式)
+    152                              //| ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+    153                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+    154                              //| LPTMR_CSR_TIE_MASK      //中断使能
+    155                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+    156                             );
+   \   00000024   0x2101             MOVS     R1,#+1
+   \   00000026   0x....             LDR.N    R2,??DataTable12_2  ;; 0x40040000
+   \   00000028   0x6011             STR      R1,[R2, #+0]
+    157          
+    158              while (!(LPTMR0_CSR & LPTMR_CSR_TCF_MASK)); //等待比较值与计数值相等，即时间到了
+   \                     ??lptmr_delay_ms_2: (+1)
+   \   0000002A   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   0000002C   0x6809             LDR      R1,[R1, #+0]
+   \   0000002E   0x0609             LSLS     R1,R1,#+24
+   \   00000030   0xD5FB             BPL.N    ??lptmr_delay_ms_2
+    159          
+    160              LPTMR0_CSR &= ~LPTMR_CSR_TEN_MASK;          //清除比较标志位
+   \   00000032   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000034   0x6809             LDR      R1,[R1, #+0]
+   \   00000036   0x0849             LSRS     R1,R1,#+1
+   \   00000038   0x0049             LSLS     R1,R1,#+1
+   \   0000003A   0x....             LDR.N    R2,??DataTable12_2  ;; 0x40040000
+   \   0000003C   0x6011             STR      R1,[R2, #+0]
+    161          
+    162              return;
+   \                     ??lptmr_delay_ms_0: (+1)
+   \   0000003E   0x4770             BX       LR               ;; return
+    163          }
+    164          
+    165          /*!
+    166           *  @brief      LPTMR定时函数（ms）
+    167           *  @param      ms          LPTMR定时时间(0~65535)
+    168           *  @since      v5.0
+    169           *  Sample usage:
+    170                              lptmr_timing_ms(32);                                // LPTMR 定时 32ms
+    171                              set_vector_handler(LPTimer_VECTORn,lptmr_hander);   // 设置中断服务函数到中断向量表里
+    172                              enable_irq(LPTimer_IRQn);                           // 使能LPTMR中断
+    173           */
+
+   \                                 In section .text, align 2, keep-with-next
+    174          void lptmr_timing_ms(uint16 ms)
+    175          {
+    176              if(ms == 0)
+   \                     lptmr_timing_ms: (+1)
+   \   00000000   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \   00000002   0x2800             CMP      R0,#+0
+   \   00000004   0xD011             BEQ.N    ??lptmr_timing_ms_0
+    177              {
+    178                  return;
+    179              }
+    180          
+    181              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;    //使能LPT模块时钟
+   \                     ??lptmr_timing_ms_1: (+1)
+   \   00000006   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   00000008   0x6809             LDR      R1,[R1, #+0]
+   \   0000000A   0xF051 0x0101      ORRS     R1,R1,#0x1
+   \   0000000E   0x....             LDR.N    R2,??DataTable12  ;; 0x40048038
+   \   00000010   0x6011             STR      R1,[R2, #+0]
+    182          
+    183              LPTMR0_CSR = 0x00;                      //先关了LPT，自动清计数器的值
+   \   00000012   0x2100             MOVS     R1,#+0
+   \   00000014   0x....             LDR.N    R2,??DataTable12_2  ;; 0x40040000
+   \   00000016   0x6011             STR      R1,[R2, #+0]
+    184          
+    185              LPTMR0_CMR = ms;                        //设置比较值，即延时时间
+   \   00000018   0xB280             UXTH     R0,R0            ;; ZeroExt  R0,R0,#+16,#+16
+   \   0000001A   0x....             LDR.N    R1,??DataTable12_4  ;; 0x40040008
+   \   0000001C   0x6008             STR      R0,[R1, #+0]
+    186          
+    187              //选择时钟源
+    188              LPTMR0_PSR  =   ( 0
+    189                                | LPTMR_PSR_PCS(1)                  //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+    190                                | LPTMR_PSR_PBYP_MASK               //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+    191                                //| LPTMR_PSR_PRESCALE(1)           //预分频值 = 2^(n+1) ,n = 0~ 0xF
+    192                              );
+   \   0000001E   0x2105             MOVS     R1,#+5
+   \   00000020   0x....             LDR.N    R2,??DataTable12_3  ;; 0x40040004
+   \   00000022   0x6011             STR      R1,[R2, #+0]
+    193          
+    194              //使能 LPT
+    195              LPTMR0_CSR  =  (0
+    196                              //| LPTMR_CSR_TPS(1)        // 选择输入管脚 选择
+    197                              //| LPTMR_CSR_TMS_MASK      // 选择脉冲计数 (注释了表示时间计数模式)
+    198                              //| ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+    199                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+    200                              | LPTMR_CSR_TIE_MASK        //中断使能
+    201                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+    202                             );
+   \   00000024   0x2141             MOVS     R1,#+65
+   \   00000026   0x....             LDR.N    R2,??DataTable12_2  ;; 0x40040000
+   \   00000028   0x6011             STR      R1,[R2, #+0]
+    203          
+    204              return;
+   \                     ??lptmr_timing_ms_0: (+1)
+   \   0000002A   0x4770             BX       LR               ;; return
+    205          }
+    206          
+    207          /*!
+    208           *  @brief      LPTMR延时函数（us）
+    209           *  @param      ms          LPTMR延时时间(0~41942)
+    210           *  @since      v5.0
+    211           *  Sample usage:       lptmr_delay_us(32);     // LPTMR 延时32us
+    212           */
+
+   \                                 In section .text, align 2, keep-with-next
+    213          void lptmr_delay_us(uint16 us)
+    214          {
+   \                     lptmr_delay_us: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    215              ASSERT( ( (us * EXTAL_IN_MHz + 16) /  32 )  <= 0xFFFF );    //断言，确保寄存器不溢出
+   \   00000004   0xB2A4             UXTH     R4,R4            ;; ZeroExt  R4,R4,#+16,#+16
+   \   00000006   0x2032             MOVS     R0,#+50
+   \   00000008   0xFB00 0xF004      MUL      R0,R0,R4
+   \   0000000C   0x3010             ADDS     R0,R0,#+16
+   \   0000000E   0x2120             MOVS     R1,#+32
+   \   00000010   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000014   0xF5B0 0x3F80      CMP      R0,#+65536
+   \   00000018   0xDB03             BLT.N    ??lptmr_delay_us_0
+   \   0000001A   0x21D7             MOVS     R1,#+215
+   \   0000001C   0x....             LDR.N    R0,??DataTable12_1
+   \   0000001E   0x.... 0x....      BL       assert_failed
+    216              //us * 晶振频率  /32 <= 0xFFFF
+    217              //除以 32 ，是下面的计数进行了 分频
+    218              //加上 16是为了 四舍五入
+    219          
+    220              if(us == 0)
+   \                     ??lptmr_delay_us_0: (+1)
+   \   00000022   0xB2A4             UXTH     R4,R4            ;; ZeroExt  R4,R4,#+16,#+16
+   \   00000024   0x2C00             CMP      R4,#+0
+   \   00000026   0xD028             BEQ.N    ??lptmr_delay_us_1
+    221              {
+    222                  return;
+    223              }
+    224          #if defined(MK60DZ10)
+    225              OSC_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+   \                     ??lptmr_delay_us_2: (+1)
+   \   00000028   0x....             LDR.N    R0,??DataTable12_6  ;; 0x40065000
+   \   0000002A   0x7800             LDRB     R0,[R0, #+0]
+   \   0000002C   0xF050 0x0080      ORRS     R0,R0,#0x80
+   \   00000030   0x....             LDR.N    R1,??DataTable12_6  ;; 0x40065000
+   \   00000032   0x7008             STRB     R0,[R1, #+0]
+    226          #elif defined(MK60F15)
+    227              OSC0_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+    228          #endif
+    229          
+    230              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;                        //使能LPT模块时钟
+   \   00000034   0x....             LDR.N    R0,??DataTable12  ;; 0x40048038
+   \   00000036   0x6800             LDR      R0,[R0, #+0]
+   \   00000038   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   0000003C   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   0000003E   0x6008             STR      R0,[R1, #+0]
+    231          
+    232              LPTMR0_CSR = 0x00;                                          //先关了LPT，自动清计数器的值
+   \   00000040   0x2000             MOVS     R0,#+0
+   \   00000042   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000044   0x6008             STR      R0,[R1, #+0]
+    233          
+    234              LPTMR0_CMR = (us * EXTAL_IN_MHz + 16) / 32;                 //设置比较值，即延时时间
+   \   00000046   0xB2A4             UXTH     R4,R4            ;; ZeroExt  R4,R4,#+16,#+16
+   \   00000048   0x2032             MOVS     R0,#+50
+   \   0000004A   0xFB00 0xF004      MUL      R0,R0,R4
+   \   0000004E   0x3010             ADDS     R0,R0,#+16
+   \   00000050   0x2120             MOVS     R1,#+32
+   \   00000052   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000056   0x....             LDR.N    R1,??DataTable12_4  ;; 0x40040008
+   \   00000058   0x6008             STR      R0,[R1, #+0]
+    235          
+    236              //选择时钟源
+    237              LPTMR0_PSR  =   ( 0
+    238                                | LPTMR_PSR_PCS(3)          //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+    239                                //| LPTMR_PSR_PBYP_MASK     //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+    240                                | LPTMR_PSR_PRESCALE(4)     //预分频值 = 2^(n+1) ,n = 0~ 0xF
+    241                              );
+   \   0000005A   0x2023             MOVS     R0,#+35
+   \   0000005C   0x....             LDR.N    R1,??DataTable12_3  ;; 0x40040004
+   \   0000005E   0x6008             STR      R0,[R1, #+0]
+    242          
+    243              //使能 LPT
+    244              LPTMR0_CSR  =  (0
+    245                              //| LPTMR_CSR_TPS(1)        // 选择输入管脚 选择
+    246                              //| LPTMR_CSR_TMS_MASK      // 选择脉冲计数 (注释了表示时间计数模式)
+    247                              //| ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+    248                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+    249                              //| LPTMR_CSR_TIE_MASK      //中断使能
+    250                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+    251                             );
+   \   00000060   0x2001             MOVS     R0,#+1
+   \   00000062   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000064   0x6008             STR      R0,[R1, #+0]
+    252          
+    253              while (!(LPTMR0_CSR & LPTMR_CSR_TCF_MASK)); //等待比较值与计数值相等，即时间到了
+   \                     ??lptmr_delay_us_3: (+1)
+   \   00000066   0x....             LDR.N    R0,??DataTable12_2  ;; 0x40040000
+   \   00000068   0x6800             LDR      R0,[R0, #+0]
+   \   0000006A   0x0600             LSLS     R0,R0,#+24
+   \   0000006C   0xD5FB             BPL.N    ??lptmr_delay_us_3
+    254          
+    255              LPTMR0_CSR &= ~LPTMR_CSR_TEN_MASK;          //清除比较标志位
+   \   0000006E   0x....             LDR.N    R0,??DataTable12_2  ;; 0x40040000
+   \   00000070   0x6800             LDR      R0,[R0, #+0]
+   \   00000072   0x0840             LSRS     R0,R0,#+1
+   \   00000074   0x0040             LSLS     R0,R0,#+1
+   \   00000076   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000078   0x6008             STR      R0,[R1, #+0]
+    256          
+    257              return;
+   \                     ??lptmr_delay_us_1: (+1)
+   \   0000007A   0xBD10             POP      {R4,PC}          ;; return
+    258          }
+    259          
+    260          
+    261          
+    262          /*!
+    263           *  @brief      LPTMR定时函数（us）
+    264           *  @param      ms          LPTMR定时时间(0~41942)
+    265           *  @since      v5.0
+    266           *  Sample usage:
+    267                              lptmr_timing_us(32);     // LPTMR 定时32us
+    268                              set_vector_handler(LPTimer_VECTORn,lptmr_hander);   // 设置中断服务函数到中断向量表里
+    269                              enable_irq(LPTimer_IRQn);                           // 使能LPTMR中断
+    270           */
+
+   \                                 In section .text, align 2, keep-with-next
+    271          void lptmr_timing_us(uint16 us)
+    272          {
+   \                     lptmr_timing_us: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    273              ASSERT( ( (us * EXTAL_IN_MHz + 16) /  32 )  <= 0xFFFF );    //断言，确保寄存器不溢出
+   \   00000004   0xB2A4             UXTH     R4,R4            ;; ZeroExt  R4,R4,#+16,#+16
+   \   00000006   0x2032             MOVS     R0,#+50
+   \   00000008   0xFB00 0xF004      MUL      R0,R0,R4
+   \   0000000C   0x3010             ADDS     R0,R0,#+16
+   \   0000000E   0x2120             MOVS     R1,#+32
+   \   00000010   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000014   0xF5B0 0x3F80      CMP      R0,#+65536
+   \   00000018   0xDB04             BLT.N    ??lptmr_timing_us_0
+   \   0000001A   0xF240 0x1111      MOVW     R1,#+273
+   \   0000001E   0x....             LDR.N    R0,??DataTable12_1
+   \   00000020   0x.... 0x....      BL       assert_failed
+    274              //us * 晶振频率  /32 <= 0xFFFF
+    275              //除以 32 ，是下面的计数进行了 分频
+    276              //加上 16是为了 四舍五入
+    277          
+    278              if(us == 0)
+   \                     ??lptmr_timing_us_0: (+1)
+   \   00000024   0xB2A4             UXTH     R4,R4            ;; ZeroExt  R4,R4,#+16,#+16
+   \   00000026   0x2C00             CMP      R4,#+0
+   \   00000028   0xD01E             BEQ.N    ??lptmr_timing_us_1
+    279              {
+    280                  return;
+    281              }
+    282          
+    283          #if defined(MK60DZ10)
+    284              OSC_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+   \                     ??lptmr_timing_us_2: (+1)
+   \   0000002A   0x....             LDR.N    R0,??DataTable12_6  ;; 0x40065000
+   \   0000002C   0x7800             LDRB     R0,[R0, #+0]
+   \   0000002E   0xF050 0x0080      ORRS     R0,R0,#0x80
+   \   00000032   0x....             LDR.N    R1,??DataTable12_6  ;; 0x40065000
+   \   00000034   0x7008             STRB     R0,[R1, #+0]
+    285          #elif defined(MK60F15)
+    286              OSC0_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+    287          #endif
+    288          
+    289              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;                        //使能LPT模块时钟
+   \   00000036   0x....             LDR.N    R0,??DataTable12  ;; 0x40048038
+   \   00000038   0x6800             LDR      R0,[R0, #+0]
+   \   0000003A   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   0000003E   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   00000040   0x6008             STR      R0,[R1, #+0]
+    290          
+    291              LPTMR0_CSR = 0x00;                                          //先关了LPT，自动清计数器的值
+   \   00000042   0x2000             MOVS     R0,#+0
+   \   00000044   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000046   0x6008             STR      R0,[R1, #+0]
+    292          
+    293              LPTMR0_CMR = (us * EXTAL_IN_MHz + 16) / 32;                 //设置比较值，即延时时间
+   \   00000048   0xB2A4             UXTH     R4,R4            ;; ZeroExt  R4,R4,#+16,#+16
+   \   0000004A   0x2032             MOVS     R0,#+50
+   \   0000004C   0xFB00 0xF004      MUL      R0,R0,R4
+   \   00000050   0x3010             ADDS     R0,R0,#+16
+   \   00000052   0x2120             MOVS     R1,#+32
+   \   00000054   0xFB90 0xF0F1      SDIV     R0,R0,R1
+   \   00000058   0x....             LDR.N    R1,??DataTable12_4  ;; 0x40040008
+   \   0000005A   0x6008             STR      R0,[R1, #+0]
+    294          
+    295              //选择时钟源
+    296              LPTMR0_PSR  =   ( 0
+    297                                | LPTMR_PSR_PCS(3)          //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+    298                                //| LPTMR_PSR_PBYP_MASK     //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+    299                                | LPTMR_PSR_PRESCALE(4)     //预分频值 = 2^(n+1) ,n = 0~ 0xF
+    300                              );
+   \   0000005C   0x2023             MOVS     R0,#+35
+   \   0000005E   0x....             LDR.N    R1,??DataTable12_3  ;; 0x40040004
+   \   00000060   0x6008             STR      R0,[R1, #+0]
+    301          
+    302              //使能 LPT
+    303              LPTMR0_CSR  =  (0
+    304                              //| LPTMR_CSR_TPS(1)        // 选择输入管脚 选择
+    305                              //| LPTMR_CSR_TMS_MASK      // 选择脉冲计数 (注释了表示时间计数模式)
+    306                              //| ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+    307                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+    308                              | LPTMR_CSR_TIE_MASK      //中断使能
+    309                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+    310                             );
+   \   00000062   0x2041             MOVS     R0,#+65
+   \   00000064   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000066   0x6008             STR      R0,[R1, #+0]
+    311          
+    312              return;
+   \                     ??lptmr_timing_us_1: (+1)
+   \   00000068   0xBD10             POP      {R4,PC}          ;; return
+    313          }
+    314          
+    315          
+    316          
+    317          /*!
+    318           *  @brief      LPTMR计时函数（ms,计时时间最大为65534ms）
+    319           *  @since      v5.0
+    320           *  Sample usage:
+    321                              void my_delay(uint32 time)
+    322                              {
+    323                                  volatile uint32 i = time;
+    324                                  while(i--);
+    325          
+    326                              }
+    327          
+    328          
+    329                              lptmr_time_start_ms();
+    330          
+    331                              my_delay(600000);
+    332                              i = lptmr_time_get_ms();
+    333                              if(i == ~0)
+    334                              {
+    335                                  printf("\n计时时间超时");
+    336                              }
+    337                              else
+    338                              {
+    339                                  printf("\n计时时间为：%dms",i);
+    340                              }
+    341           */
+
+   \                                 In section .text, align 2, keep-with-next
+    342          void lptmr_time_start_ms(void)
+    343          {
+    344              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;    //使能LPT模块时钟
+   \                     lptmr_time_start_ms: (+1)
+   \   00000000   0x....             LDR.N    R0,??DataTable12  ;; 0x40048038
+   \   00000002   0x6800             LDR      R0,[R0, #+0]
+   \   00000004   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   00000008   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   0000000A   0x6008             STR      R0,[R1, #+0]
+    345          
+    346              LPTMR0_CSR = 0x00;                      //先关了LPT，自动清计数器的值
+   \   0000000C   0x2000             MOVS     R0,#+0
+   \   0000000E   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000010   0x6008             STR      R0,[R1, #+0]
+    347          
+    348              LPTMR0_CMR = ~0;                        //设置比较值，即延时时间
+   \   00000012   0xF05F 0x30FF      MOVS     R0,#-1
+   \   00000016   0x....             LDR.N    R1,??DataTable12_4  ;; 0x40040008
+   \   00000018   0x6008             STR      R0,[R1, #+0]
+    349          
+    350              //选择时钟源
+    351              LPTMR0_PSR  =   ( 0
+    352                                | LPTMR_PSR_PCS(1)                  //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+    353                                | LPTMR_PSR_PBYP_MASK               //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+    354                                //| LPTMR_PSR_PRESCALE(1)           //预分频值 = 2^(n+1) ,n = 0~ 0xF
+    355                              );
+   \   0000001A   0x2005             MOVS     R0,#+5
+   \   0000001C   0x....             LDR.N    R1,??DataTable12_3  ;; 0x40040004
+   \   0000001E   0x6008             STR      R0,[R1, #+0]
+    356          
+    357              //使能 LPT
+    358              LPTMR0_CSR  =  (0
+    359                              //| LPTMR_CSR_TPS(1)        // 选择输入管脚 选择
+    360                              //| LPTMR_CSR_TMS_MASK      // 选择脉冲计数 (注释了表示时间计数模式)
+    361                              //| ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+    362                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+    363                              //| LPTMR_CSR_TIE_MASK      //中断使能
+    364                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+    365                             );
+   \   00000020   0x2001             MOVS     R0,#+1
+   \   00000022   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000024   0x6008             STR      R0,[R1, #+0]
+    366              return;
+   \   00000026   0x4770             BX       LR               ;; return
+    367          }
+    368          
+    369          
+    370          
+    371          
+    372          /*!
+    373           *  @brief      获取LPTMR计时时间（ms）
+    374          *   @return     计时时间（返回值为 ~0 表示计时超时，其他值在 0~ 65534ms 区间内 ）
+    375           *  @since      v5.0
+    376           *  Sample usage:   参考 lptmr_time_start_ms 的调用例子
+    377           */
+
+   \                                 In section .text, align 2, keep-with-next
+    378          uint32 lptmr_time_get_ms(void)
+    379          {
+    380              uint32 data;
+    381          
+    382              if(LPTMR0_CSR & LPTMR_CSR_TCF_MASK)     //已经溢出了
+   \                     lptmr_time_get_ms: (+1)
+   \   00000000   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000002   0x6809             LDR      R1,[R1, #+0]
+   \   00000004   0x0609             LSLS     R1,R1,#+24
+   \   00000006   0xD503             BPL.N    ??lptmr_time_get_ms_0
+    383              {
+    384          
+    385                  data = ~0;                          //返回 0xffffffff 表示错误
+   \   00000008   0xF05F 0x31FF      MOVS     R1,#-1
+   \   0000000C   0x0008             MOVS     R0,R1
+   \   0000000E   0xE002             B.N      ??lptmr_time_get_ms_1
+    386              }
+    387              else
+    388              {
+    389          #if defined(MK60F15)
+    390                  LPTMR0_CNR = 0;
+    391          #endif
+    392                  data = LPTMR0_CNR;                  //返回计时时间(此值最大为 0xffff)
+   \                     ??lptmr_time_get_ms_0: (+1)
+   \   00000010   0x....             LDR.N    R1,??DataTable12_5  ;; 0x4004000c
+   \   00000012   0x6809             LDR      R1,[R1, #+0]
+   \   00000014   0x0008             MOVS     R0,R1
+    393              }
+    394          
+    395              return data;
+   \                     ??lptmr_time_get_ms_1: (+1)
+   \   00000016   0x4770             BX       LR               ;; return
+    396          }
+    397          
+    398          /*!
+    399           *  @brief      关闭 LPTMR计时
+    400           *  @since      v5.0
+    401           */
+
+   \                                 In section .text, align 2, keep-with-next
+    402          void lptmr_time_close()
+    403          {
+    404              LPTMR0_CSR = 0x00;                                          //先关了LPT，自动清计数器的值，清空溢出标记
+   \                     lptmr_time_close: (+1)
+   \   00000000   0x2000             MOVS     R0,#+0
+   \   00000002   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000004   0x6008             STR      R0,[R1, #+0]
+    405          }
+   \   00000006   0x4770             BX       LR               ;; return
+    406          
+    407          /*!
+    408           *  @brief      LPTMR计时函数（us,计时时间最大为41942us）
+    409           *  @since      v5.0
+    410           *  Sample usage:
+    411                              void my_delay(uint32 time)
+    412                              {
+    413                                  volatile uint32 i = time;
+    414                                  while(i--);
+    415          
+    416                              }
+    417          
+    418                              uint32 i;
+    419                              lptmr_time_start_us();
+    420          
+    421                              my_delay(5894);
+    422          
+    423                              i = lptmr_time_get_us();
+    424                              if(i == ~0)
+    425                              {
+    426                                  printf("\n计时时间超时");
+    427                              }
+    428                              else
+    429                              {
+    430                                  printf("\n计时时间为：%dus",i);
+    431                              }
+    432           */
+
+   \                                 In section .text, align 2, keep-with-next
+    433          void lptmr_time_start_us(void)
+    434          {
+    435          
+    436          #if defined(MK60DZ10)
+    437              OSC_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+   \                     lptmr_time_start_us: (+1)
+   \   00000000   0x....             LDR.N    R0,??DataTable12_6  ;; 0x40065000
+   \   00000002   0x7800             LDRB     R0,[R0, #+0]
+   \   00000004   0xF050 0x0080      ORRS     R0,R0,#0x80
+   \   00000008   0x....             LDR.N    R1,??DataTable12_6  ;; 0x40065000
+   \   0000000A   0x7008             STRB     R0,[R1, #+0]
+    438          #elif defined(MK60F15)
+    439              OSC0_CR |= OSC_CR_ERCLKEN_MASK;                              //使能 OSCERCLK
+    440          #endif
+    441          
+    442              SIM_SCGC5 |= SIM_SCGC5_LPTIMER_MASK;                        //使能LPT模块时钟
+   \   0000000C   0x....             LDR.N    R0,??DataTable12  ;; 0x40048038
+   \   0000000E   0x6800             LDR      R0,[R0, #+0]
+   \   00000010   0xF050 0x0001      ORRS     R0,R0,#0x1
+   \   00000014   0x....             LDR.N    R1,??DataTable12  ;; 0x40048038
+   \   00000016   0x6008             STR      R0,[R1, #+0]
+    443          
+    444              LPTMR0_CSR = 0x00;                                          //先关了LPT，自动清计数器的值
+   \   00000018   0x2000             MOVS     R0,#+0
+   \   0000001A   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   0000001C   0x6008             STR      R0,[R1, #+0]
+    445          
+    446              LPTMR0_CMR = ~0;                                            //设置比较值为最大值
+   \   0000001E   0xF05F 0x30FF      MOVS     R0,#-1
+   \   00000022   0x....             LDR.N    R1,??DataTable12_4  ;; 0x40040008
+   \   00000024   0x6008             STR      R0,[R1, #+0]
+    447          
+    448              //选择时钟源
+    449              LPTMR0_PSR  =   ( 0
+    450                                | LPTMR_PSR_PCS(3)          //选择时钟源： 0 为 MCGIRCLK ，1为 LPO（1KHz） ，2为 ERCLK32K ，3为 OSCERCLK
+    451                                //| LPTMR_PSR_PBYP_MASK     //旁路 预分频/干扰滤波器 ,即不用 预分频/干扰滤波器(注释了表示使用预分频/干扰滤波器)
+    452                                | LPTMR_PSR_PRESCALE(4)     //预分频值 = 2^(n+1) ,n = 0~ 0xF
+    453                              );
+   \   00000026   0x2023             MOVS     R0,#+35
+   \   00000028   0x....             LDR.N    R1,??DataTable12_3  ;; 0x40040004
+   \   0000002A   0x6008             STR      R0,[R1, #+0]
+    454          
+    455              //使能 LPT
+    456              LPTMR0_CSR  =  (0
+    457                              //| LPTMR_CSR_TPS(1)        // 选择输入管脚 选择
+    458                              //| LPTMR_CSR_TMS_MASK      // 选择脉冲计数 (注释了表示时间计数模式)
+    459                              //| ( cfg == LPT_Falling ?  LPTMR_CSR_TPP_MASK :   0  )  //脉冲计数器触发方式选择：0为高电平有效，上升沿加1
+    460                              | LPTMR_CSR_TEN_MASK        //使能LPT(注释了表示禁用)
+    461                              //| LPTMR_CSR_TIE_MASK      //中断使能
+    462                              //| LPTMR_CSR_TFC_MASK      //0:计数值等于比较值就复位；1：溢出复位（注释表示0）
+    463                             );
+   \   0000002C   0x2001             MOVS     R0,#+1
+   \   0000002E   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000030   0x6008             STR      R0,[R1, #+0]
+    464          
+    465              return;
+   \   00000032   0x4770             BX       LR               ;; return
+    466          }
+    467          
+    468          /*!
+    469           *  @brief      获取LPTMR计时时间（us）
+    470          *   @return     计时时间（返回值为 ~0 表示计时超时，其他值在 0~ 41942us 区间内 ）
+    471           *  @since      v5.0
+    472           *  Sample usage:   参考 lptmr_time_start_us 的调用例子
+    473           */
+
+   \                                 In section .text, align 2, keep-with-next
+    474          uint32 lptmr_time_get_us(void)
+    475          {
+    476              uint32 data;
+    477          
+    478              if(LPTMR0_CSR & LPTMR_CSR_TCF_MASK)     //已经溢出了
+   \                     lptmr_time_get_us: (+1)
+   \   00000000   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   00000002   0x6809             LDR      R1,[R1, #+0]
+   \   00000004   0x0609             LSLS     R1,R1,#+24
+   \   00000006   0xD503             BPL.N    ??lptmr_time_get_us_0
+    479              {
+    480          
+    481                  data = ~0;                          //返回 0xffffffff 表示错误
+   \   00000008   0xF05F 0x31FF      MOVS     R1,#-1
+   \   0000000C   0x0008             MOVS     R0,R1
+   \   0000000E   0xE006             B.N      ??lptmr_time_get_us_1
+    482              }
+    483              else
+    484              {
+    485          #if defined(MK60F15)
+    486                  LPTMR0_CNR = 0;
+    487          #endif
+    488                  data = (LPTMR0_CNR * 32) / EXTAL_IN_MHz; //进行单位换算
+   \                     ??lptmr_time_get_us_0: (+1)
+   \   00000010   0x....             LDR.N    R1,??DataTable12_5  ;; 0x4004000c
+   \   00000012   0x6809             LDR      R1,[R1, #+0]
+   \   00000014   0x0149             LSLS     R1,R1,#+5
+   \   00000016   0x2232             MOVS     R2,#+50
+   \   00000018   0xFBB1 0xF1F2      UDIV     R1,R1,R2
+   \   0000001C   0x0008             MOVS     R0,R1
+    489              }
+    490          
+    491              return data;
+   \                     ??lptmr_time_get_us_1: (+1)
+   \   0000001E   0x4770             BX       LR               ;; return
+    492          }
+    493          
+    494          
+    495          /*!
+    496           *  @brief      LPTMR中断服务函数
+    497           *  @since      v5.0
+    498           *  @warning    此函数需要用户根据自己需求完成，这里仅仅是提供一个模版
+    499           *  Sample usage:       set_vector_handler(LPTimer_VECTORn , lptmr_handler);    //把 lptmr_handler 函数添加到中断向量表，不需要我们手动调用
+    500           */
+
+   \                                 In section .text, align 2, keep-with-next
+    501          void lptmr_test_handler(void)
+    502          {
+    503              LPTMR_Flag_Clear();
+   \                     lptmr_test_handler: (+1)
+   \   00000000   0x....             LDR.N    R0,??DataTable12_2  ;; 0x40040000
+   \   00000002   0x6800             LDR      R0,[R0, #+0]
+   \   00000004   0xF050 0x0080      ORRS     R0,R0,#0x80
+   \   00000008   0x....             LDR.N    R1,??DataTable12_2  ;; 0x40040000
+   \   0000000A   0x6008             STR      R0,[R1, #+0]
+    504          
+    505              //下面由用户添加实现代码
+    506          
+    507          
+    508          }
+   \   0000000C   0x4770             BX       LR               ;; return
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12:
+   \   00000000   0x40048038         DC32     0x40048038
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12_1:
+   \   00000000   0x........         DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12_2:
+   \   00000000   0x40040000         DC32     0x40040000
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12_3:
+   \   00000000   0x40040004         DC32     0x40040004
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12_4:
+   \   00000000   0x40040008         DC32     0x40040008
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12_5:
+   \   00000000   0x4004000C         DC32     0x4004000c
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable12_6:
+   \   00000000   0x40065000         DC32     0x40065000
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \   00000000   0x44 0x3A          DC8 44H, 3AH, 5CH, 53H, 74H, 75H, 64H, 79H
+   \              0x5C 0x53    
+   \              0x74 0x75    
+   \              0x64 0x79    
+   \   00000008   0x5C 0x32          DC8 5CH, 32H, 30H, 31H, 36H, 0B5H, 0E7H, 0D7H
+   \              0x30 0x31    
+   \              0x36 0xB5    
+   \              0xE7 0xD7    
+   \   00000010   0xD3 0xC9          DC8 0D3H, 0C9H, 0E8H, 0BCH, 0C6H, 0B4H, 0F3H, 0C8H
+   \              0xE8 0xBC    
+   \              0xC6 0xB4    
+   \              0xF3 0xC8    
+   \   00000018   0xFC 0x5C          DC8 0FCH, 5CH, 54H, 69H, 5CH, 0B5H, 0E7H, 0C8H
+   \              0x54 0x69    
+   \              0x5C 0xB5    
+   \              0xE7 0xC8    
+   \   00000020   0xFC 0xB1          DC8 0FCH, 0B1H, 0B8H, 0D3H, 0C3H, 0B5H, 0D7H, 0B2H
+   \              0xB8 0xD3    
+   \              0xC3 0xB5    
+   \              0xD7 0xB2    
+   \   00000028   0xE3 0x5C          DC8 0E3H, 5CH, 43H, 68H, 69H, 70H, 5CH, 73H
+   \              0x43 0x68    
+   \              0x69 0x70    
+   \              0x5C 0x73    
+   \   00000030   0x72 0x63          DC8 72H, 63H, 5CH, 4DH, 4BH, 36H, 30H, 5FH
+   \              0x5C 0x4D    
+   \              0x4B 0x36    
+   \              0x30 0x5F    
+   \   00000038   0x6C 0x70          DC8 6CH, 70H, 74H, 6DH, 72H, 2EH, 63H, 0
+   \              0x74 0x6D    
+   \              0x72 0x2E    
+   \              0x63 0x00    
+    509          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   lptmr_delay_ms
+       8   lptmr_delay_us
+         8   -> assert_failed
+       0   lptmr_pulse_clean
+       0   lptmr_pulse_get
+      16   lptmr_pulse_init
+        16   -> assert_failed
+        16   -> port_init
+       0   lptmr_test_handler
+       0   lptmr_time_close
+       0   lptmr_time_get_ms
+       0   lptmr_time_get_us
+       0   lptmr_time_start_ms
+       0   lptmr_time_start_us
+       0   lptmr_timing_ms
+       8   lptmr_timing_us
+         8   -> assert_failed
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable12
+       4  ??DataTable12_1
+       4  ??DataTable12_2
+       4  ??DataTable12_3
+       4  ??DataTable12_4
+       4  ??DataTable12_5
+       4  ??DataTable12_6
+      64  ?_0
+      64  lptmr_delay_ms
+     124  lptmr_delay_us
+      26  lptmr_pulse_clean
+      26  lptmr_pulse_get
+     126  lptmr_pulse_init
+      14  lptmr_test_handler
+       8  lptmr_time_close
+      24  lptmr_time_get_ms
+      32  lptmr_time_get_us
+      40  lptmr_time_start_ms
+      52  lptmr_time_start_us
+      44  lptmr_timing_ms
+     106  lptmr_timing_us
+
+ 
+  64 bytes in section .rodata
+ 714 bytes in section .text
+ 
+ 714 bytes of CODE  memory
+  64 bytes of CONST memory
+
+Errors: none
+Warnings: none

@@ -1,0 +1,853 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:33
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\src\VCAN_key.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\src\VCAN_key.c -D
+#        DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\VCAN_key.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\VCAN_key.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Board\src\VCAN_key.c
+      1          /*!
+      2           *     COPYRIGHT NOTICE
+      3           *     Copyright (c) 2013,山外科技
+      4           *     All rights reserved.
+      5           *     技术讨论：山外论坛 http://www.vcan123.com
+      6           *
+      7           *     除注明出处外，以下所有内容版权均属山外科技所有，未经允许，不得用于商业用途，
+      8           *     修改内容时必须保留山外科技的版权声明。
+      9           *
+     10           * @file       VCAN_KEY.c
+     11           * @brief      KEY驱动函数实现
+     12           * @author     山外科技
+     13           * @version    v5.0
+     14           * @date       2013-07-10
+     15           */
+     16          
+     17          
+     18          /*
+     19           * 包含头文件
+     20           */
+     21          #include "common.h"
+     22          #include "MK60_port.h"
+     23          #include "MK60_gpio.h"
+     24          #include "VCAN_key.h"
+     25          
+     26          
+     27          /*
+     28           * 定义 KEY 编号对应的管脚
+     29           */
+
+   \                                 In section .data, align 4
+     30          PTXn_e KEY_PTxn[KEY_MAX] = {PTD10, PTD14, PTD11, PTD12, PTD7, PTD13, PTC14, PTC15};
+   \                     KEY_PTxn:
+   \   00000000   0x6A 0x6E          DC8 106, 110, 107, 108, 103, 109, 78, 79
+   \              0x6B 0x6C    
+   \              0x67 0x6D    
+   \              0x4E 0x4F    
+     31          
+     32          
+     33          /*!
+     34           *  @brief      初始化key端口(key 小于 KEY_MAX 时初始化 对应端口，否则初始化全部端口)
+     35           *  @param      KEY_e    KEY编号
+     36           *  @since      v5.0
+     37           *  Sample usage:       key_init (KEY_U);    //初始化 KEY_U
+     38           */
+
+   \                                 In section .text, align 2, keep-with-next
+     39          void    key_init(KEY_e key)
+     40          {
+   \                     key_init: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     41              if(key < KEY_MAX)
+   \   00000004   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000006   0x2C08             CMP      R4,#+8
+   \   00000008   0xDA0D             BGE.N    ??key_init_0
+     42              {
+     43                  gpio_init(KEY_PTxn[key], GPI, 0);
+   \   0000000A   0x2200             MOVS     R2,#+0
+   \   0000000C   0x2100             MOVS     R1,#+0
+   \   0000000E   0x....             LDR.N    R0,??DataTable4
+   \   00000010   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000012   0x5C20             LDRB     R0,[R4, R0]
+   \   00000014   0x.... 0x....      BL       gpio_init
+     44                  port_init_NoALT(KEY_PTxn[key], PULLUP);         //保持复用不变，仅仅改变配置选项
+   \   00000018   0x2103             MOVS     R1,#+3
+   \   0000001A   0x....             LDR.N    R0,??DataTable4
+   \   0000001C   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000001E   0x5C20             LDRB     R0,[R4, R0]
+   \   00000020   0x.... 0x....      BL       port_init_NoALT
+   \   00000024   0xE014             B.N      ??key_init_1
+     45              }
+     46              else
+     47              {
+     48                  key = KEY_MAX;
+   \                     ??key_init_0: (+1)
+   \   00000026   0x2008             MOVS     R0,#+8
+   \   00000028   0x0004             MOVS     R4,R0
+     49          
+     50                  //初始化全部 按键
+     51                  while(key--)
+   \                     ??key_init_2: (+1)
+   \   0000002A   0x0020             MOVS     R0,R4
+   \   0000002C   0x1E44             SUBS     R4,R0,#+1
+   \   0000002E   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000030   0x2800             CMP      R0,#+0
+   \   00000032   0xD00D             BEQ.N    ??key_init_1
+     52                  {
+     53                      gpio_init(KEY_PTxn[key], GPI, 0);
+   \   00000034   0x2200             MOVS     R2,#+0
+   \   00000036   0x2100             MOVS     R1,#+0
+   \   00000038   0x....             LDR.N    R0,??DataTable4
+   \   0000003A   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000003C   0x5C20             LDRB     R0,[R4, R0]
+   \   0000003E   0x.... 0x....      BL       gpio_init
+     54                      port_init_NoALT(KEY_PTxn[key], PULLUP);         //保持复用不变，仅仅改变配置选项
+   \   00000042   0x2103             MOVS     R1,#+3
+   \   00000044   0x....             LDR.N    R0,??DataTable4
+   \   00000046   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000048   0x5C20             LDRB     R0,[R4, R0]
+   \   0000004A   0x.... 0x....      BL       port_init_NoALT
+   \   0000004E   0xE7EC             B.N      ??key_init_2
+     55                  }
+     56          
+     57              }
+     58          }
+   \                     ??key_init_1: (+1)
+   \   00000050   0xBD10             POP      {R4,PC}          ;; return
+     59          
+
+   \                                 In section .text, align 2, keep-with-next
+     60          void Dial_Switch(void)           //拨码开关
+     61          {
+   \                     Dial_Switch: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     62              gpio_init(Dial_1, GPO, 0);
+   \   00000002   0x2200             MOVS     R2,#+0
+   \   00000004   0x2101             MOVS     R1,#+1
+   \   00000006   0x208C             MOVS     R0,#+140
+   \   00000008   0x.... 0x....      BL       gpio_init
+     63              gpio_init(Dial_2, GPO, 0);
+   \   0000000C   0x2200             MOVS     R2,#+0
+   \   0000000E   0x2101             MOVS     R1,#+1
+   \   00000010   0x208B             MOVS     R0,#+139
+   \   00000012   0x.... 0x....      BL       gpio_init
+     64              gpio_init(Dial_3, GPO, 0);
+   \   00000016   0x2200             MOVS     R2,#+0
+   \   00000018   0x2101             MOVS     R1,#+1
+   \   0000001A   0x2098             MOVS     R0,#+152
+   \   0000001C   0x.... 0x....      BL       gpio_init
+     65              gpio_init(Dial_4, GPO, 0);
+   \   00000020   0x2200             MOVS     R2,#+0
+   \   00000022   0x2101             MOVS     R1,#+1
+   \   00000024   0x209A             MOVS     R0,#+154
+   \   00000026   0x.... 0x....      BL       gpio_init
+     66              gpio_init(Dial_5, GPO, 0);
+   \   0000002A   0x2200             MOVS     R2,#+0
+   \   0000002C   0x2101             MOVS     R1,#+1
+   \   0000002E   0x2099             MOVS     R0,#+153
+   \   00000030   0x.... 0x....      BL       gpio_init
+     67              gpio_init(Dial_6, GPO, 0);
+   \   00000034   0x2200             MOVS     R2,#+0
+   \   00000036   0x2101             MOVS     R1,#+1
+   \   00000038   0x209C             MOVS     R0,#+156
+   \   0000003A   0x.... 0x....      BL       gpio_init
+     68           
+     69          }
+   \   0000003E   0xBD01             POP      {R0,PC}          ;; return
+
+   \                                 In section .text, align 2, keep-with-next
+     70          void Common_Key(void)            //普通按键初始化
+     71          {
+   \                     Common_Key: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     72                  gpio_init(Key_1, GPI, 0);
+   \   00000002   0x2200             MOVS     R2,#+0
+   \   00000004   0x2100             MOVS     R1,#+0
+   \   00000006   0x2034             MOVS     R0,#+52
+   \   00000008   0x.... 0x....      BL       gpio_init
+     73                  port_init_NoALT(Key_1, PULLUP);
+   \   0000000C   0x2103             MOVS     R1,#+3
+   \   0000000E   0x2034             MOVS     R0,#+52
+   \   00000010   0x.... 0x....      BL       port_init_NoALT
+     74                  gpio_init(Key_2, GPI, 0);
+   \   00000014   0x2200             MOVS     R2,#+0
+   \   00000016   0x2100             MOVS     R1,#+0
+   \   00000018   0x2035             MOVS     R0,#+53
+   \   0000001A   0x.... 0x....      BL       gpio_init
+     75                  port_init_NoALT(Key_2, PULLUP);
+   \   0000001E   0x2103             MOVS     R1,#+3
+   \   00000020   0x2035             MOVS     R0,#+53
+   \   00000022   0x.... 0x....      BL       port_init_NoALT
+     76                  gpio_init(Key_3, GPI, 0);
+   \   00000026   0x2200             MOVS     R2,#+0
+   \   00000028   0x2100             MOVS     R1,#+0
+   \   0000002A   0x2036             MOVS     R0,#+54
+   \   0000002C   0x.... 0x....      BL       gpio_init
+     77                  port_init_NoALT(Key_3, PULLUP);
+   \   00000030   0x2103             MOVS     R1,#+3
+   \   00000032   0x2036             MOVS     R0,#+54
+   \   00000034   0x.... 0x....      BL       port_init_NoALT
+     78                  gpio_init(Key_4, GPI, 0);
+   \   00000038   0x2200             MOVS     R2,#+0
+   \   0000003A   0x2100             MOVS     R1,#+0
+   \   0000003C   0x2037             MOVS     R0,#+55
+   \   0000003E   0x.... 0x....      BL       gpio_init
+     79                  port_init_NoALT(Key_4, PULLUP);
+   \   00000042   0x2103             MOVS     R1,#+3
+   \   00000044   0x2037             MOVS     R0,#+55
+   \   00000046   0x.... 0x....      BL       port_init_NoALT
+     80          }
+   \   0000004A   0xBD01             POP      {R0,PC}          ;; return
+     81                  
+     82                  
+
+   \                                 In section .text, align 2, keep-with-next
+     83          void FiveDir_Key_Init(void)          //五向按键初始化
+     84          {
+   \                     FiveDir_Key_Init: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     85                  gpio_init(Key_L, GPI, 0);
+   \   00000002   0x2200             MOVS     R2,#+0
+   \   00000004   0x2100             MOVS     R1,#+0
+   \   00000006   0x2018             MOVS     R0,#+24
+   \   00000008   0x.... 0x....      BL       gpio_init
+     86                  port_init_NoALT(Key_L, PULLUP);
+   \   0000000C   0x2103             MOVS     R1,#+3
+   \   0000000E   0x2018             MOVS     R0,#+24
+   \   00000010   0x.... 0x....      BL       port_init_NoALT
+     87                  gpio_init(Key_R, GPI, 0);
+   \   00000014   0x2200             MOVS     R2,#+0
+   \   00000016   0x2100             MOVS     R1,#+0
+   \   00000018   0x2060             MOVS     R0,#+96
+   \   0000001A   0x.... 0x....      BL       gpio_init
+     88                  port_init_NoALT(Key_R, PULLUP);
+   \   0000001E   0x2103             MOVS     R1,#+3
+   \   00000020   0x2060             MOVS     R0,#+96
+   \   00000022   0x.... 0x....      BL       port_init_NoALT
+     89                  gpio_init(Key_U, GPI, 0);
+   \   00000026   0x2200             MOVS     R2,#+0
+   \   00000028   0x2100             MOVS     R1,#+0
+   \   0000002A   0x2019             MOVS     R0,#+25
+   \   0000002C   0x.... 0x....      BL       gpio_init
+     90                  port_init_NoALT(Key_U, PULLUP);
+   \   00000030   0x2103             MOVS     R1,#+3
+   \   00000032   0x2019             MOVS     R0,#+25
+   \   00000034   0x.... 0x....      BL       port_init_NoALT
+     91                  gpio_init(Key_D, GPI, 0);
+   \   00000038   0x2200             MOVS     R2,#+0
+   \   0000003A   0x2100             MOVS     R1,#+0
+   \   0000003C   0x201B             MOVS     R0,#+27
+   \   0000003E   0x.... 0x....      BL       gpio_init
+     92                  port_init_NoALT(Key_D, PULLUP);
+   \   00000042   0x2103             MOVS     R1,#+3
+   \   00000044   0x201B             MOVS     R0,#+27
+   \   00000046   0x.... 0x....      BL       port_init_NoALT
+     93                  gpio_init(Key_M, GPI, 0);
+   \   0000004A   0x2200             MOVS     R2,#+0
+   \   0000004C   0x2100             MOVS     R1,#+0
+   \   0000004E   0x201A             MOVS     R0,#+26
+   \   00000050   0x.... 0x....      BL       gpio_init
+     94                  port_init_NoALT(Key_M, PULLUP);
+   \   00000054   0x2103             MOVS     R1,#+3
+   \   00000056   0x201A             MOVS     R0,#+26
+   \   00000058   0x.... 0x....      BL       port_init_NoALT
+     95          
+     96          }
+   \   0000005C   0xBD01             POP      {R0,PC}          ;; return
+     97          
+     98          /*!
+     99           *  @brief      获取key状态（不带延时消抖）
+    100           *  @param      KEY_e           KEY编号
+    101           *  @return     KEY_STATUS_e    KEY状态（KEY_DOWN、KEY_DOWN）
+    102           *  @since      v5.0
+    103           *  Sample usage:
+    104                              if(key_get(KEY_U) ==  KEY_DOWN)
+    105                              {
+    106                                  printf("\n按键按下")
+    107                              }
+    108           */
+
+   \                                 In section .text, align 2, keep-with-next
+    109          KEY_STATUS_e key_get(KEY_e key)
+    110          {
+   \                     key_get: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    111              if(gpio_get(KEY_PTxn[key]) == KEY_DOWN)
+   \   00000004   0x....             LDR.N    R0,??DataTable4
+   \   00000006   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000008   0x5C20             LDRB     R0,[R4, R0]
+   \   0000000A   0x.... 0x....      BL       gpio_get
+   \   0000000E   0x2800             CMP      R0,#+0
+   \   00000010   0xD101             BNE.N    ??key_get_0
+    112              {
+    113                  return KEY_DOWN;
+   \   00000012   0x2000             MOVS     R0,#+0
+   \   00000014   0xE000             B.N      ??key_get_1
+    114              }
+    115              return KEY_UP;
+   \                     ??key_get_0: (+1)
+   \   00000016   0x2001             MOVS     R0,#+1
+   \                     ??key_get_1: (+1)
+   \   00000018   0xBD10             POP      {R4,PC}          ;; return
+    116          }
+    117          
+    118          
+    119          /*!
+    120           *  @brief      检测key状态（带延时消抖）
+    121           *  @param      KEY_e           KEY编号
+    122           *  @return     KEY_STATUS_e    KEY状态（KEY_DOWN、KEY_DOWN）
+    123           *  @since      v5.0
+    124           *  Sample usage:
+    125                              if(key_check(KEY_U) ==  KEY_DOWN)
+    126                              {
+    127                                  printf("\n按键按下")
+    128                              }
+    129           */
+
+   \                                 In section .text, align 2, keep-with-next
+    130          KEY_STATUS_e key_check(KEY_e key)
+    131          {
+   \                     key_check: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+    132              if(key_get(key) == KEY_DOWN)
+   \   00000004   0x0020             MOVS     R0,R4
+   \   00000006   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000008   0x.... 0x....      BL       key_get
+   \   0000000C   0x2800             CMP      R0,#+0
+   \   0000000E   0xD10A             BNE.N    ??key_check_0
+    133              {
+    134                  DELAY_MS(10);
+   \   00000010   0x200A             MOVS     R0,#+10
+   \   00000012   0x.... 0x....      BL       systick_delay_ms
+    135                  if( key_get(key) == KEY_DOWN)
+   \   00000016   0x0020             MOVS     R0,R4
+   \   00000018   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000001A   0x.... 0x....      BL       key_get
+   \   0000001E   0x2800             CMP      R0,#+0
+   \   00000020   0xD101             BNE.N    ??key_check_0
+    136                  {
+    137                      return KEY_DOWN;
+   \   00000022   0x2000             MOVS     R0,#+0
+   \   00000024   0xE000             B.N      ??key_check_1
+    138                  }
+    139              }
+    140              return KEY_UP;
+   \                     ??key_check_0: (+1)
+   \   00000026   0x2001             MOVS     R0,#+1
+   \                     ??key_check_1: (+1)
+   \   00000028   0xBD10             POP      {R4,PC}          ;; return
+    141          }
+    142          
+    143          
+    144          /*********************  如下代码是实现按键定时扫描，发送消息到FIFO  ********************/
+    145          /*
+    146           * 定义按键消息FIFO状态
+    147           */
+    148          typedef enum
+    149          {
+    150              KEY_MSG_EMPTY,      //没有按键消息
+    151              KEY_MSG_NORMAL,     //正常，有按键消息，但不满
+    152              KEY_MSG_FULL,       //按键消息满
+    153          } key_msg_e;
+    154          
+    155          /*
+    156           * 定义按键消息FIFO相关的变量
+    157           */
+
+   \                                 In section .bss, align 4
+    158          KEY_MSG_t           key_msg[KEY_MSG_FIFO_SIZE];             //按键消息FIFO
+   \                     key_msg:
+   \   00000000                      DS8 40
+
+   \                                 In section .bss, align 1
+    159          volatile uint8      key_msg_front = 0, key_msg_rear = 0;    //接收FIFO的指针
+   \                     key_msg_front:
+   \   00000000                      DS8 1
+
+   \                                 In section .bss, align 1
+   \                     key_msg_rear:
+   \   00000000                      DS8 1
+
+   \                                 In section .bss, align 1
+    160          volatile uint8      key_msg_flag = KEY_MSG_EMPTY;           //按键消息FIFO状态
+   \                     key_msg_flag:
+   \   00000000                      DS8 1
+    161          
+    162          
+    163          /*!
+    164           *  @brief      发送按键消息到FIFO
+    165           *  @param      KEY_MSG_t       按键消息
+    166           *  @since      v5.0
+    167           *  Sample usage:
+    168                              KEY_MSG_t *keymsg;
+    169                              keymsg.key      = KEY_U;
+    170                              keymsg.status   = KEY_HOLD;
+    171                              send_key_msg(keymsg);                   //发送
+    172           */
+
+   \                                 In section .text, align 2, keep-with-next
+    173          void send_key_msg(KEY_MSG_t keymsg)
+    174          {
+   \                     send_key_msg: (+1)
+   \   00000000   0xB401             PUSH     {R0}
+    175              uint8 tmp;
+    176              //保存在FIFO里
+    177              if(key_msg_flag == KEY_MSG_FULL)
+   \   00000002   0x....             LDR.N    R1,??DataTable4_1
+   \   00000004   0x7809             LDRB     R1,[R1, #+0]
+   \   00000006   0x2902             CMP      R1,#+2
+   \   00000008   0xD029             BEQ.N    ??send_key_msg_0
+    178              {
+    179                  //满了直接不处理
+    180                  return ;
+    181              }
+    182              key_msg[key_msg_rear].key = keymsg.key;
+   \                     ??send_key_msg_1: (+1)
+   \   0000000A   0xF89D 0x1000      LDRB     R1,[SP, #+0]
+   \   0000000E   0x....             LDR.N    R2,??DataTable4_2
+   \   00000010   0x....             LDR.N    R3,??DataTable4_3
+   \   00000012   0x781B             LDRB     R3,[R3, #+0]
+   \   00000014   0xF802 0x1013      STRB     R1,[R2, R3, LSL #+1]
+    183              key_msg[key_msg_rear].status = keymsg.status;
+   \   00000018   0xF89D 0x1001      LDRB     R1,[SP, #+1]
+   \   0000001C   0x....             LDR.N    R2,??DataTable4_2
+   \   0000001E   0x....             LDR.N    R3,??DataTable4_3
+   \   00000020   0x781B             LDRB     R3,[R3, #+0]
+   \   00000022   0xEB12 0x0243      ADDS     R2,R2,R3, LSL #+1
+   \   00000026   0x7051             STRB     R1,[R2, #+1]
+    184          
+    185              key_msg_rear++;
+   \   00000028   0x....             LDR.N    R1,??DataTable4_3
+   \   0000002A   0x7809             LDRB     R1,[R1, #+0]
+   \   0000002C   0x1C49             ADDS     R1,R1,#+1
+   \   0000002E   0x....             LDR.N    R2,??DataTable4_3
+   \   00000030   0x7011             STRB     R1,[R2, #+0]
+    186          
+    187              if(key_msg_rear >= KEY_MSG_FIFO_SIZE)
+   \   00000032   0x....             LDR.N    R1,??DataTable4_3
+   \   00000034   0x7809             LDRB     R1,[R1, #+0]
+   \   00000036   0x2914             CMP      R1,#+20
+   \   00000038   0xDB02             BLT.N    ??send_key_msg_2
+    188              {
+    189                  key_msg_rear = 0;                       //重头开始
+   \   0000003A   0x2100             MOVS     R1,#+0
+   \   0000003C   0x....             LDR.N    R2,??DataTable4_3
+   \   0000003E   0x7011             STRB     R1,[R2, #+0]
+    190              }
+    191          
+    192              tmp = key_msg_rear;
+   \                     ??send_key_msg_2: (+1)
+   \   00000040   0x....             LDR.N    R1,??DataTable4_3
+   \   00000042   0x7809             LDRB     R1,[R1, #+0]
+   \   00000044   0x0008             MOVS     R0,R1
+    193              if(tmp == key_msg_front)                   //追到屁股了，满了
+   \   00000046   0x....             LDR.N    R1,??DataTable4_4
+   \   00000048   0x7809             LDRB     R1,[R1, #+0]
+   \   0000004A   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   0000004C   0x4288             CMP      R0,R1
+   \   0000004E   0xD103             BNE.N    ??send_key_msg_3
+    194              {
+    195                  key_msg_flag = KEY_MSG_FULL;
+   \   00000050   0x2102             MOVS     R1,#+2
+   \   00000052   0x....             LDR.N    R2,??DataTable4_1
+   \   00000054   0x7011             STRB     R1,[R2, #+0]
+   \   00000056   0xE002             B.N      ??send_key_msg_4
+    196              }
+    197              else
+    198              {
+    199                  key_msg_flag = KEY_MSG_NORMAL;
+   \                     ??send_key_msg_3: (+1)
+   \   00000058   0x2101             MOVS     R1,#+1
+   \   0000005A   0x....             LDR.N    R2,??DataTable4_1
+   \   0000005C   0x7011             STRB     R1,[R2, #+0]
+    200              }
+    201          }
+   \                     ??send_key_msg_4: (+1)
+   \                     ??send_key_msg_0: (+1)
+   \   0000005E   0xB001             ADD      SP,SP,#+4
+   \   00000060   0x4770             BX       LR               ;; return
+    202          
+    203          
+    204          /*!
+    205           *  @brief      从FIFO里获取按键消息
+    206           *  @param      KEY_MSG_t       按键消息
+    207           *  @return     是否获取按键消息（1为获取成功，0为没获取到按键消息）
+    208           *  @since      v5.0
+    209           *  Sample usage:
+    210                              KEY_MSG_t keymsg;
+    211                              if(get_key_msg(&keymsg) == 1)
+    212                              {
+    213                                  printf("\n按下按键KEY%d,类型为%d（0为按下，1为弹起，2为长按）",keymsg.key,keymsg.status);
+    214                              }
+    215           */
+
+   \                                 In section .text, align 2, keep-with-next
+    216          uint8 get_key_msg(KEY_MSG_t *keymsg)
+    217          {
+   \                     get_key_msg: (+1)
+   \   00000000   0x0001             MOVS     R1,R0
+    218              uint8 tmp;
+    219          
+    220              if(key_msg_flag == KEY_MSG_EMPTY)               //按键消息FIFO为空，直接返回0
+   \   00000002   0x....             LDR.N    R0,??DataTable4_1
+   \   00000004   0x7800             LDRB     R0,[R0, #+0]
+   \   00000006   0x2800             CMP      R0,#+0
+   \   00000008   0xD101             BNE.N    ??get_key_msg_0
+    221              {
+    222                  return 0;
+   \   0000000A   0x2000             MOVS     R0,#+0
+   \   0000000C   0xE028             B.N      ??get_key_msg_1
+    223              }
+    224          
+    225              keymsg->key = key_msg[key_msg_front].key;       //从FIFO队首中获取按键值
+   \                     ??get_key_msg_0: (+1)
+   \   0000000E   0x....             LDR.N    R0,??DataTable4_2
+   \   00000010   0x....             LDR.N    R3,??DataTable4_4
+   \   00000012   0x781B             LDRB     R3,[R3, #+0]
+   \   00000014   0xF810 0x0013      LDRB     R0,[R0, R3, LSL #+1]
+   \   00000018   0x7008             STRB     R0,[R1, #+0]
+    226              keymsg->status = key_msg[key_msg_front].status; //从FIFO队首中获取按键类型
+   \   0000001A   0x....             LDR.N    R0,??DataTable4_2
+   \   0000001C   0x....             LDR.N    R3,??DataTable4_4
+   \   0000001E   0x781B             LDRB     R3,[R3, #+0]
+   \   00000020   0xEB10 0x0043      ADDS     R0,R0,R3, LSL #+1
+   \   00000024   0x7840             LDRB     R0,[R0, #+1]
+   \   00000026   0x7048             STRB     R0,[R1, #+1]
+    227          
+    228              key_msg_front++;                                //FIFO队首指针加1，指向下一个消息
+   \   00000028   0x....             LDR.N    R0,??DataTable4_4
+   \   0000002A   0x7800             LDRB     R0,[R0, #+0]
+   \   0000002C   0x1C40             ADDS     R0,R0,#+1
+   \   0000002E   0x....             LDR.N    R3,??DataTable4_4
+   \   00000030   0x7018             STRB     R0,[R3, #+0]
+    229          
+    230              if(key_msg_front >= KEY_MSG_FIFO_SIZE)          //FIFO指针队首溢出则从0开始计数
+   \   00000032   0x....             LDR.N    R0,??DataTable4_4
+   \   00000034   0x7800             LDRB     R0,[R0, #+0]
+   \   00000036   0x2814             CMP      R0,#+20
+   \   00000038   0xDB02             BLT.N    ??get_key_msg_2
+    231              {
+    232                  key_msg_front = 0;                          //重头开始计数（循环利用数组）
+   \   0000003A   0x2000             MOVS     R0,#+0
+   \   0000003C   0x....             LDR.N    R3,??DataTable4_4
+   \   0000003E   0x7018             STRB     R0,[R3, #+0]
+    233              }
+    234          
+    235              tmp = key_msg_rear;
+   \                     ??get_key_msg_2: (+1)
+   \   00000040   0x....             LDR.N    R0,??DataTable4_3
+   \   00000042   0x7800             LDRB     R0,[R0, #+0]
+   \   00000044   0x0002             MOVS     R2,R0
+    236              if(key_msg_front == tmp)                        //比较队首和队尾是否一样，一样则表示FIFO已空了
+   \   00000046   0x....             LDR.N    R0,??DataTable4_4
+   \   00000048   0x7800             LDRB     R0,[R0, #+0]
+   \   0000004A   0xB2D2             UXTB     R2,R2            ;; ZeroExt  R2,R2,#+24,#+24
+   \   0000004C   0x4290             CMP      R0,R2
+   \   0000004E   0xD103             BNE.N    ??get_key_msg_3
+    237              {
+    238                  key_msg_flag = KEY_MSG_EMPTY;
+   \   00000050   0x2000             MOVS     R0,#+0
+   \   00000052   0x....             LDR.N    R3,??DataTable4_1
+   \   00000054   0x7018             STRB     R0,[R3, #+0]
+   \   00000056   0xE002             B.N      ??get_key_msg_4
+    239              }
+    240              else
+    241              {
+    242                  key_msg_flag = KEY_MSG_NORMAL;
+   \                     ??get_key_msg_3: (+1)
+   \   00000058   0x2001             MOVS     R0,#+1
+   \   0000005A   0x....             LDR.N    R3,??DataTable4_1
+   \   0000005C   0x7018             STRB     R0,[R3, #+0]
+    243              }
+    244          
+    245              return 1;
+   \                     ??get_key_msg_4: (+1)
+   \   0000005E   0x2001             MOVS     R0,#+1
+   \                     ??get_key_msg_1: (+1)
+   \   00000060   0x4770             BX       LR               ;; return
+    246          }
+    247          
+    248          /*!
+    249           *  @brief      定时检测key状态
+    250           *  @since      v5.0
+    251           *  @note       此函数需要放入 定时中断服务函数里，定时10ms执行一次
+    252           */
+
+   \                                 In section .text, align 2, keep-with-next
+    253          void key_IRQHandler(void)
+    254          {
+   \                     key_IRQHandler: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0xB082             SUB      SP,SP,#+8
+    255          
+    256              KEY_e   keynum;
+    257              static uint8 keytime[KEY_MAX];                          //静态数组，保存各数组按下时间
+    258          
+    259              KEY_MSG_t keymsg;                                       //按键消息
+    260          
+    261              for(keynum = (KEY_e)0 ; keynum < KEY_MAX; keynum ++)    //每个按键轮询
+   \   00000004   0x2000             MOVS     R0,#+0
+   \   00000006   0x0004             MOVS     R4,R0
+   \                     ??key_IRQHandler_0: (+1)
+   \   00000008   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000000A   0x2C08             CMP      R4,#+8
+   \   0000000C   0xDA4E             BGE.N    ??key_IRQHandler_1
+    262              {
+    263                  if(key_get(keynum) == KEY_DOWN)                     //判断按键是否按下
+   \   0000000E   0x0020             MOVS     R0,R4
+   \   00000010   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000012   0x.... 0x....      BL       key_get
+   \   00000016   0x2800             CMP      R0,#+0
+   \   00000018   0xD135             BNE.N    ??key_IRQHandler_2
+    264                  {
+    265                      keytime[keynum]++;                              //按下时间累加
+   \   0000001A   0x....             LDR.N    R0,??DataTable4_5
+   \   0000001C   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000001E   0x5C20             LDRB     R0,[R4, R0]
+   \   00000020   0x1C40             ADDS     R0,R0,#+1
+   \   00000022   0x....             LDR.N    R1,??DataTable4_5
+   \   00000024   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000026   0x5460             STRB     R0,[R4, R1]
+    266          
+    267                      if(keytime[keynum] <= KEY_DOWN_TIME)            //判断时间是否没超过消抖确认按下时间
+   \   00000028   0x....             LDR.N    R0,??DataTable4_5
+   \   0000002A   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000002C   0x5C20             LDRB     R0,[R4, R0]
+   \   0000002E   0x2802             CMP      R0,#+2
+   \   00000030   0xDB3A             BLT.N    ??key_IRQHandler_3
+    268                      {
+    269                          continue;                                   //没达到，则继续等待
+    270                      }
+    271                      else if(keytime[keynum] == KEY_DOWN_TIME + 1 )  //判断时间是否为消抖确认按下时间
+   \                     ??key_IRQHandler_4: (+1)
+   \   00000032   0x....             LDR.N    R0,??DataTable4_5
+   \   00000034   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000036   0x5C20             LDRB     R0,[R4, R0]
+   \   00000038   0x2802             CMP      R0,#+2
+   \   0000003A   0xD108             BNE.N    ??key_IRQHandler_5
+    272                      {
+    273                          //确认按键按下
+    274                          keymsg.key = keynum;
+   \   0000003C   0xF88D 0x4000      STRB     R4,[SP, #+0]
+    275                          keymsg.status = KEY_DOWN;
+   \   00000040   0x2000             MOVS     R0,#+0
+   \   00000042   0xF88D 0x0001      STRB     R0,[SP, #+1]
+    276                          send_key_msg(keymsg);                       //把按键值和按键类型发送消息到FIFO
+   \   00000046   0x9800             LDR      R0,[SP, #+0]
+   \   00000048   0x.... 0x....      BL       send_key_msg
+   \   0000004C   0xE02C             B.N      ??key_IRQHandler_3
+    277                      }
+    278                      else if(keytime[keynum] <= KEY_HOLD_TIME)       //是否没超过长按HOLD按键确认时间
+   \                     ??key_IRQHandler_5: (+1)
+   \   0000004E   0x....             LDR.N    R0,??DataTable4_5
+   \   00000050   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000052   0x5C20             LDRB     R0,[R4, R0]
+   \   00000054   0x2833             CMP      R0,#+51
+   \   00000056   0xDB27             BLT.N    ??key_IRQHandler_3
+    279                      {
+    280                          continue;                                   //没超过，则继续等待
+    281                      }
+    282                      else if(keytime[keynum]  == KEY_HOLD_TIME + 1)  //是否为长按hold确认时间
+   \                     ??key_IRQHandler_6: (+1)
+   \   00000058   0x....             LDR.N    R0,??DataTable4_5
+   \   0000005A   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000005C   0x5C20             LDRB     R0,[R4, R0]
+   \   0000005E   0x2833             CMP      R0,#+51
+   \   00000060   0xD10C             BNE.N    ??key_IRQHandler_7
+    283                      {
+    284                          //确认长按HOLD
+    285                          keymsg.key = keynum;
+   \   00000062   0xF88D 0x4000      STRB     R4,[SP, #+0]
+    286                          keymsg.status = KEY_HOLD;
+   \   00000066   0x2002             MOVS     R0,#+2
+   \   00000068   0xF88D 0x0001      STRB     R0,[SP, #+1]
+    287                          send_key_msg(keymsg);                       //发送
+   \   0000006C   0x9800             LDR      R0,[SP, #+0]
+   \   0000006E   0x.... 0x....      BL       send_key_msg
+    288                          keytime[keynum] = KEY_DOWN_TIME + 1;
+   \   00000072   0x2002             MOVS     R0,#+2
+   \   00000074   0x....             LDR.N    R1,??DataTable4_5
+   \   00000076   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000078   0x5460             STRB     R0,[R4, R1]
+   \   0000007A   0xE015             B.N      ??key_IRQHandler_3
+    289                      }
+    290                      else
+    291                      {
+    292                          keytime[keynum] = KEY_DOWN_TIME + 1;        //继续重复检测 hold 状态
+   \                     ??key_IRQHandler_7: (+1)
+   \   0000007C   0x2002             MOVS     R0,#+2
+   \   0000007E   0x....             LDR.N    R1,??DataTable4_5
+   \   00000080   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   00000082   0x5460             STRB     R0,[R4, R1]
+   \   00000084   0xE010             B.N      ??key_IRQHandler_3
+    293                      }
+    294                  }
+    295                  else
+    296                  {
+    297                      if(keytime[keynum] > KEY_DOWN_TIME)             //如果确认过按下按键
+   \                     ??key_IRQHandler_2: (+1)
+   \   00000086   0x....             LDR.N    R0,??DataTable4_5
+   \   00000088   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   0000008A   0x5C20             LDRB     R0,[R4, R0]
+   \   0000008C   0x2802             CMP      R0,#+2
+   \   0000008E   0xDB07             BLT.N    ??key_IRQHandler_8
+    298                      {
+    299                          keymsg.key = keynum;
+   \   00000090   0xF88D 0x4000      STRB     R4,[SP, #+0]
+    300                          keymsg.status = KEY_UP;
+   \   00000094   0x2001             MOVS     R0,#+1
+   \   00000096   0xF88D 0x0001      STRB     R0,[SP, #+1]
+    301                          send_key_msg(keymsg);                       //发送按键弹起消息
+   \   0000009A   0x9800             LDR      R0,[SP, #+0]
+   \   0000009C   0x.... 0x....      BL       send_key_msg
+    302                      }
+    303          
+    304                      keytime[keynum] = 0;                            //时间累计清0
+   \                     ??key_IRQHandler_8: (+1)
+   \   000000A0   0x2000             MOVS     R0,#+0
+   \   000000A2   0x....             LDR.N    R1,??DataTable4_5
+   \   000000A4   0xB2E4             UXTB     R4,R4            ;; ZeroExt  R4,R4,#+24,#+24
+   \   000000A6   0x5460             STRB     R0,[R4, R1]
+    305                  }
+    306              }
+   \                     ??key_IRQHandler_3: (+1)
+   \   000000A8   0x1C64             ADDS     R4,R4,#+1
+   \   000000AA   0xE7AD             B.N      ??key_IRQHandler_0
+    307          }
+   \                     ??key_IRQHandler_1: (+1)
+   \   000000AC   0xBD13             POP      {R0,R1,R4,PC}    ;; return
+
+   \                                 In section .bss, align 4
+   \                     ??keytime:
+   \   00000000                      DS8 8
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4:
+   \   00000000   0x........         DC32     KEY_PTxn
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_1:
+   \   00000000   0x........         DC32     key_msg_flag
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_2:
+   \   00000000   0x........         DC32     key_msg
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_3:
+   \   00000000   0x........         DC32     key_msg_rear
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_4:
+   \   00000000   0x........         DC32     key_msg_front
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable4_5:
+   \   00000000   0x........         DC32     ??keytime
+    308          
+    309          
+    310          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   Common_Key
+         8   -> gpio_init
+         8   -> port_init_NoALT
+       8   Dial_Switch
+         8   -> gpio_init
+       8   FiveDir_Key_Init
+         8   -> gpio_init
+         8   -> port_init_NoALT
+       0   get_key_msg
+      16   key_IRQHandler
+        16   -> key_get
+        16   -> send_key_msg
+       8   key_check
+         8   -> key_get
+         8   -> systick_delay_ms
+       8   key_get
+         8   -> gpio_get
+       8   key_init
+         8   -> gpio_init
+         8   -> port_init_NoALT
+       4   send_key_msg
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+      76  Common_Key
+      64  Dial_Switch
+      94  FiveDir_Key_Init
+       8  KEY_PTxn
+      98  get_key_msg
+     174  key_IRQHandler
+      42  key_check
+      26  key_get
+      82  key_init
+      40  key_msg
+       1  key_msg_flag
+       1  key_msg_front
+       1  key_msg_rear
+       8  keytime
+      98  send_key_msg
+
+ 
+  51 bytes in section .bss
+   8 bytes in section .data
+ 778 bytes in section .text
+ 
+ 778 bytes of CODE memory
+  59 bytes of DATA memory
+
+Errors: none
+Warnings: none
