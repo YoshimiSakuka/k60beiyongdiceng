@@ -1,0 +1,348 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:32
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Lib\USB\USB_CDC.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Lib\USB\USB_CDC.c -D DEBUG
+#        -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\USB_CDC.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\USB_CDC.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Lib\USB\USB_CDC.c
+      1          #include"USB_CDC.h"
+      2          
+      3          
+      4          
+      5          /* CDC Global Structures */
+
+   \                                 In section .bss, align 4
+      6          CDC_Line_Coding com_cfg;
+   \                     com_cfg:
+   \   00000000                      DS8 8
+
+   \                                 In section .bss, align 1
+      7          uint8 u8CDCState    = WAITING_FOR_ENUMERATION;
+   \                     u8CDCState:
+   \   00000000                      DS8 1
+
+   \                                 In section .bss, align 4
+      8          uint8 CDC_OUT_Data[CDC_BUFFER_SIZE];
+   \                     CDC_OUT_Data:
+   \   00000000                      DS8 128
+      9          
+     10          
+     11          
+     12          /*!
+     13           *  @brief      CDC类初始化函数
+     14           *  @since      v5.0
+     15           */
+
+   \                                 In section .text, align 2, keep-with-next
+     16          void CDC_Init(void)
+     17          {
+     18              //配置串口特性
+     19              com_cfg.DTERate      = 9600;                //波特率
+   \                     CDC_Init: (+1)
+   \   00000000   0xF44F 0x5016      MOV      R0,#+9600
+   \   00000004   0x....             LDR.N    R1,??DataTable2
+   \   00000006   0x6008             STR      R0,[R1, #+0]
+     20              com_cfg.CharFormat   = 0;                   //字符格式
+   \   00000008   0x2000             MOVS     R0,#+0
+   \   0000000A   0x....             LDR.N    R1,??DataTable2
+   \   0000000C   0x7108             STRB     R0,[R1, #+4]
+     21              com_cfg.ParityType   = 0;                   //极性类型
+   \   0000000E   0x2000             MOVS     R0,#+0
+   \   00000010   0x....             LDR.N    R1,??DataTable2
+   \   00000012   0x7148             STRB     R0,[R1, #+5]
+     22              com_cfg.Databits     = 0x08;                //数据位数
+   \   00000014   0x2008             MOVS     R0,#+8
+   \   00000016   0x....             LDR.N    R1,??DataTable2
+   \   00000018   0x7188             STRB     R0,[R1, #+6]
+     23          }
+   \   0000001A   0x4770             BX       LR               ;; return
+     24          
+     25          /**********************************************************/
+
+   \                                 In section .text, align 2, keep-with-next
+     26          void CDC_Engine(void)
+     27          {
+   \                     CDC_Engine: (+1)
+   \   00000000   0xB580             PUSH     {R7,LR}
+     28              //uint16 u8RecData;
+     29              /* control Stage */
+     30              switch(u8CDCState)
+   \   00000002   0x....             LDR.N    R0,??DataTable2_1
+   \   00000004   0x7800             LDRB     R0,[R0, #+0]
+   \   00000006   0x2800             CMP      R0,#+0
+   \   00000008   0xD004             BEQ.N    ??CDC_Engine_0
+   \   0000000A   0x2820             CMP      R0,#+32
+   \   0000000C   0xD00A             BEQ.N    ??CDC_Engine_1
+   \   0000000E   0x2822             CMP      R0,#+34
+   \   00000010   0xD01C             BEQ.N    ??CDC_Engine_2
+   \   00000012   0xE020             B.N      ??CDC_Engine_3
+     31              {
+     32              case WAITING_FOR_ENUMERATION:
+     33                  /* 等待 USB 枚举 */
+     34                  while(gu8USB_State != uENUMERATED)
+   \                     ??CDC_Engine_0: (+1)
+   \   00000014   0x....             LDR.N    R0,??DataTable2_2
+   \   00000016   0x7800             LDRB     R0,[R0, #+0]
+   \   00000018   0x2801             CMP      R0,#+1
+   \   0000001A   0xD1FB             BNE.N    ??CDC_Engine_0
+     35                  {
+     36                      (void)u8CDCState;
+     37                  };
+     38          
+     39          
+     40                  u8CDCState = 0;
+   \                     ??CDC_Engine_4: (+1)
+   \   0000001C   0x2000             MOVS     R0,#+0
+   \   0000001E   0x....             LDR.N    R1,??DataTable2_1
+   \   00000020   0x7008             STRB     R0,[R1, #+0]
+     41                  break;
+   \   00000022   0xE018             B.N      ??CDC_Engine_3
+     42          
+     43              case SET_LINE_CODING:
+     44                  if(FLAG_CHK(EP0, gu8USB_Flags))
+   \                     ??CDC_Engine_1: (+1)
+   \   00000024   0x....             LDR.N    R0,??DataTable2_3
+   \   00000026   0x7800             LDRB     R0,[R0, #+0]
+   \   00000028   0x07C0             LSLS     R0,R0,#+31
+   \   0000002A   0xD50E             BPL.N    ??CDC_Engine_5
+     45                  {
+     46                      FLAG_CLR(EP0, gu8USB_Flags);
+   \   0000002C   0x....             LDR.N    R0,??DataTable2_3
+   \   0000002E   0x7800             LDRB     R0,[R0, #+0]
+   \   00000030   0xF010 0x00FE      ANDS     R0,R0,#0xFE
+   \   00000034   0x....             LDR.N    R1,??DataTable2_3
+   \   00000036   0x7008             STRB     R0,[R1, #+0]
+     47                      (void)EP_OUT_Transfer(EP0, (uint8 *)&com_cfg);
+   \   00000038   0x....             LDR.N    R1,??DataTable2
+   \   0000003A   0x2000             MOVS     R0,#+0
+   \   0000003C   0x.... 0x....      BL       EP_OUT_Transfer
+     48                      EP_IN_Transfer(EP0, 0, 0);
+   \   00000040   0x2200             MOVS     R2,#+0
+   \   00000042   0x2100             MOVS     R1,#+0
+   \   00000044   0x2000             MOVS     R0,#+0
+   \   00000046   0x.... 0x....      BL       EP_IN_Transfer
+     49                  }
+     50                  break;
+   \                     ??CDC_Engine_5: (+1)
+   \   0000004A   0xE004             B.N      ??CDC_Engine_3
+     51          
+     52              case SET_CONTROL_LINE_STATE:
+     53                  EP_IN_Transfer(EP0, 0, 0);
+   \                     ??CDC_Engine_2: (+1)
+   \   0000004C   0x2200             MOVS     R2,#+0
+   \   0000004E   0x2100             MOVS     R1,#+0
+   \   00000050   0x2000             MOVS     R0,#+0
+   \   00000052   0x.... 0x....      BL       EP_IN_Transfer
+     54                  break;
+     55          
+     56              }
+     57          }
+   \                     ??CDC_Engine_3: (+1)
+   \   00000056   0xBD01             POP      {R0,PC}          ;; return
+     58          
+     59          /*!
+     60           *  @brief      当前接口请求为CDC类请求 的 中断服务函数
+     61           *  @note       在 USB_Setup_Handler 中断里调用
+     62           *  @since      v5.0
+     63           */
+
+   \                                 In section .text, align 2, keep-with-next
+     64          uint8 CDC_InterfaceReq_Handler(void)
+     65          {
+   \                     CDC_InterfaceReq_Handler: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+     66              uint8 u8State = uSETUP;
+   \   00000002   0x2400             MOVS     R4,#+0
+     67          
+     68              switch(Setup_Pkt->bRequest)
+   \   00000004   0x....             LDR.N    R0,??DataTable2_4
+   \   00000006   0x6800             LDR      R0,[R0, #+0]
+   \   00000008   0x7840             LDRB     R0,[R0, #+1]
+   \   0000000A   0x280A             CMP      R0,#+10
+   \   0000000C   0xD008             BEQ.N    ??CDC_InterfaceReq_Handler_0
+   \   0000000E   0x2820             CMP      R0,#+32
+   \   00000010   0xD012             BEQ.N    ??CDC_InterfaceReq_Handler_1
+   \   00000012   0x2821             CMP      R0,#+33
+   \   00000014   0xD00A             BEQ.N    ??CDC_InterfaceReq_Handler_2
+   \   00000016   0x2822             CMP      R0,#+34
+   \   00000018   0xD014             BEQ.N    ??CDC_InterfaceReq_Handler_3
+   \   0000001A   0x28AA             CMP      R0,#+170
+   \   0000001C   0xD018             BEQ.N    ??CDC_InterfaceReq_Handler_4
+   \   0000001E   0xE021             B.N      ??CDC_InterfaceReq_Handler_5
+     69              {
+     70              case GET_INTERFACE:
+     71                  EP_IN_Transfer(EP0, &gu8Interface, 1);
+   \                     ??CDC_InterfaceReq_Handler_0: (+1)
+   \   00000020   0x2201             MOVS     R2,#+1
+   \   00000022   0x....             LDR.N    R1,??DataTable2_5
+   \   00000024   0x2000             MOVS     R0,#+0
+   \   00000026   0x.... 0x....      BL       EP_IN_Transfer
+     72                  break;
+   \   0000002A   0xE01B             B.N      ??CDC_InterfaceReq_Handler_6
+     73          
+     74              case GET_LINE_CODING:
+     75                  EP_IN_Transfer(EP0, (uint8 *)&com_cfg, 7);
+   \                     ??CDC_InterfaceReq_Handler_2: (+1)
+   \   0000002C   0x2207             MOVS     R2,#+7
+   \   0000002E   0x....             LDR.N    R1,??DataTable2
+   \   00000030   0x2000             MOVS     R0,#+0
+   \   00000032   0x.... 0x....      BL       EP_IN_Transfer
+     76                  break;
+   \   00000036   0xE015             B.N      ??CDC_InterfaceReq_Handler_6
+     77          
+     78              case SET_LINE_CODING:
+     79                  u8CDCState = SET_LINE_CODING;
+   \                     ??CDC_InterfaceReq_Handler_1: (+1)
+   \   00000038   0x2020             MOVS     R0,#+32
+   \   0000003A   0x....             LDR.N    R1,??DataTable2_1
+   \   0000003C   0x7008             STRB     R0,[R1, #+0]
+     80                  u8State = uDATA;
+   \   0000003E   0x2001             MOVS     R0,#+1
+   \   00000040   0x0004             MOVS     R4,R0
+     81                  break;
+   \   00000042   0xE00F             B.N      ??CDC_InterfaceReq_Handler_6
+     82          
+     83              case SET_CONTROL_LINE_STATE:
+     84                  u8CDCState = SET_CONTROL_LINE_STATE;
+   \                     ??CDC_InterfaceReq_Handler_3: (+1)
+   \   00000044   0x2022             MOVS     R0,#+34
+   \   00000046   0x....             LDR.N    R1,??DataTable2_1
+   \   00000048   0x7008             STRB     R0,[R1, #+0]
+     85                  u8State = uSETUP;
+   \   0000004A   0x2000             MOVS     R0,#+0
+   \   0000004C   0x0004             MOVS     R4,R0
+     86                  break;
+   \   0000004E   0xE009             B.N      ??CDC_InterfaceReq_Handler_6
+     87          
+     88              case LOADER_MODE:
+     89                  FLAG_SET(LOADER, gu8USB_Flags);
+   \                     ??CDC_InterfaceReq_Handler_4: (+1)
+   \   00000050   0x....             LDR.N    R0,??DataTable2_3
+   \   00000052   0x7800             LDRB     R0,[R0, #+0]
+   \   00000054   0xF050 0x0080      ORRS     R0,R0,#0x80
+   \   00000058   0x....             LDR.N    R1,??DataTable2_3
+   \   0000005A   0x7008             STRB     R0,[R1, #+0]
+     90                  CDC_OUT_Data[0] = 0xFF;
+   \   0000005C   0x20FF             MOVS     R0,#+255
+   \   0000005E   0x....             LDR.N    R1,??DataTable2_6
+   \   00000060   0x7008             STRB     R0,[R1, #+0]
+     91                  break;
+   \   00000062   0xE7FF             B.N      ??CDC_InterfaceReq_Handler_6
+     92              default:
+     93                  break;
+     94              }
+     95              return(u8State);
+   \                     ??CDC_InterfaceReq_Handler_5: (+1)
+   \                     ??CDC_InterfaceReq_Handler_6: (+1)
+   \   00000064   0x0020             MOVS     R0,R4
+   \   00000066   0xB2C0             UXTB     R0,R0            ;; ZeroExt  R0,R0,#+24,#+24
+   \   00000068   0xBD10             POP      {R4,PC}          ;; return
+     96          }
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2:
+   \   00000000   0x........         DC32     com_cfg
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_1:
+   \   00000000   0x........         DC32     u8CDCState
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_2:
+   \   00000000   0x........         DC32     gu8USB_State
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_3:
+   \   00000000   0x........         DC32     gu8USB_Flags
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_4:
+   \   00000000   0x........         DC32     Setup_Pkt
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_5:
+   \   00000000   0x........         DC32     gu8Interface
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable2_6:
+   \   00000000   0x........         DC32     CDC_OUT_Data
+     97          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   CDC_Engine
+         8   -> EP_IN_Transfer
+         8   -> EP_OUT_Transfer
+       0   CDC_Init
+       8   CDC_InterfaceReq_Handler
+         8   -> EP_IN_Transfer
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+       4  ??DataTable2_4
+       4  ??DataTable2_5
+       4  ??DataTable2_6
+      88  CDC_Engine
+      28  CDC_Init
+     106  CDC_InterfaceReq_Handler
+     128  CDC_OUT_Data
+       8  com_cfg
+       1  u8CDCState
+
+ 
+ 137 bytes in section .bss
+ 250 bytes in section .text
+ 
+ 250 bytes of CODE memory
+ 137 bytes of DATA memory
+
+Errors: none
+Warnings: none

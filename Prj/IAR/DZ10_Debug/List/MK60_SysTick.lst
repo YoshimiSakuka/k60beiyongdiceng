@@ -1,0 +1,345 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V7.40.3.8902/W32 for ARM        27/Jul/2016  11:28:30
+# Copyright 1999-2015 IAR Systems AB.
+#
+#    Cpu mode     =  thumb
+#    Endian       =  little
+#    Source file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_SysTick.c
+#    Command line =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_SysTick.c -D
+#        DEBUG -D ARM_MATH_CM4 -D MK60DZ10 -lCN
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -lB
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\ -o
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M4 -e --fpu=None --dlib_config "E:\IAR for
+#        ARM\arm\INC\c\DLib_Config_Full.h" -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\App\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\IAR\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Chip\inc\kinetis\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\CMSIS\Inc\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\FatFs\
+#        -I D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Lib\USB\ -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\MPU6050\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\IMU\
+#        -I
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\..\..\Board\Accessories\Driver\
+#        -On
+#    List file    =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\List\MK60_SysTick.lst
+#    Object file  =  
+#        D:\Study\2016电子设计大赛\Ti\电赛备用底层\Prj\IAR\DZ10_Debug\Obj\MK60_SysTick.o
+#
+###############################################################################
+
+D:\Study\2016电子设计大赛\Ti\电赛备用底层\Chip\src\MK60_SysTick.c
+      1          /*!
+      2           *     COPYRIGHT NOTICE
+      3           *     Copyright (c) 2013,山外科技
+      4           *     All rights reserved.
+      5           *     技术讨论：山外论坛 http://www.vcan123.com
+      6           *
+      7           *     除注明出处外，以下所有内容版权均属山外科技所有，未经允许，不得用于商业用途，
+      8           *     修改内容时必须保留山外科技的版权声明。
+      9           *
+     10           * @file       MK60_SysTick.c
+     11           * @brief      SysTick 驱动函数，包括延时
+     12           * @author     山外科技
+     13           * @version    v5.0
+     14           * @date       2013-10-08
+     15           */
+     16          
+     17          
+     18          #include "common.h"
+
+   \                                 In section .text, align 2, keep-with-next
+   \   static __interwork __softfp void NVIC_SetPriority(IRQn_Type, uint32_t)
+   \                     NVIC_SetPriority: (+1)
+   \   00000000   0xB410             PUSH     {R4}
+   \   00000002   0xB240             SXTB     R0,R0            ;; SignExt  R0,R0,#+24,#+24
+   \   00000004   0x2800             CMP      R0,#+0
+   \   00000006   0xD508             BPL.N    ??NVIC_SetPriority_0
+   \   00000008   0x010A             LSLS     R2,R1,#+4
+   \   0000000A   0x....             LDR.N    R3,??DataTable3  ;; 0xe000ed18
+   \   0000000C   0xB240             SXTB     R0,R0            ;; SignExt  R0,R0,#+24,#+24
+   \   0000000E   0xF010 0x040F      ANDS     R4,R0,#0xF
+   \   00000012   0x18E3             ADDS     R3,R4,R3
+   \   00000014   0xF803 0x2C04      STRB     R2,[R3, #-4]
+   \   00000018   0xE003             B.N      ??NVIC_SetPriority_1
+   \                     ??NVIC_SetPriority_0: (+1)
+   \   0000001A   0x010A             LSLS     R2,R1,#+4
+   \   0000001C   0x....             LDR.N    R3,??DataTable3_1  ;; 0xe000e400
+   \   0000001E   0xB240             SXTB     R0,R0            ;; SignExt  R0,R0,#+24,#+24
+   \   00000020   0x54C2             STRB     R2,[R0, R3]
+   \                     ??NVIC_SetPriority_1: (+1)
+   \   00000022   0xBC10             POP      {R4}
+   \   00000024   0x4770             BX       LR               ;; return
+     19          #include "MK60_SysTick.h"
+     20          /*
+     21          Cortex-M4 的内核中包含一个 SysTick 时钟。SysTick?为一个?24?位递减计数器，
+     22          SysTick 设定初值并使能后，每经过 1 个系统时钟周期，计数值就减 1。
+     23          计数到 0 时，SysTick 计数器自动重装初值并继续计数，
+     24          同时内部的 COUNTFLAG 标志会置位，触发中断(如果中断使能情况下)。
+     25          */
+     26          
+     27          
+     28          /*!
+     29           *  @brief      SysTick延时函数
+     30           *  @param      time          LPTMR延时时间(0~65535)
+     31           *  @since      v5.0
+     32           *  Sample usage:       systick_delay(32);     // systick 延时32 个系统周期
+     33           */
+
+   \                                 In section .text, align 2, keep-with-next
+     34          void systick_delay(uint32 time)
+     35          {
+   \                     systick_delay: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     36              if(time == 0)
+   \   00000004   0x2C00             CMP      R4,#+0
+   \   00000006   0xD015             BEQ.N    ??systick_delay_0
+     37              {
+     38                  return;
+     39              }
+     40          
+     41              ASSERT(time <= (SysTick_RVR_RELOAD_MASK >> SysTick_RVR_RELOAD_SHIFT));  //24位
+   \                     ??systick_delay_1: (+1)
+   \   00000008   0xF1B4 0x7F80      CMP      R4,#+16777216
+   \   0000000C   0xD303             BCC.N    ??systick_delay_2
+   \   0000000E   0x2129             MOVS     R1,#+41
+   \   00000010   0x....             LDR.N    R0,??DataTable3_2
+   \   00000012   0x.... 0x....      BL       assert_failed
+     42          
+     43              SYST_CSR = 0x00;                        //先关了 systick ,清标志位
+   \                     ??systick_delay_2: (+1)
+   \   00000016   0x2000             MOVS     R0,#+0
+   \   00000018   0x....             LDR.N    R1,??DataTable3_3  ;; 0xe000e010
+   \   0000001A   0x6008             STR      R0,[R1, #+0]
+     44          
+     45              SYST_RVR = time;                        //设置延时时间
+   \   0000001C   0x....             LDR.N    R0,??DataTable3_4  ;; 0xe000e014
+   \   0000001E   0x6004             STR      R4,[R0, #+0]
+     46          
+     47              SYST_CVR = 0x00;                        //清空计数器
+   \   00000020   0x2000             MOVS     R0,#+0
+   \   00000022   0x....             LDR.N    R1,??DataTable3_5  ;; 0xe000e018
+   \   00000024   0x6008             STR      R0,[R1, #+0]
+     48          
+     49              SYST_CSR = ( 0
+     50                           | SysTick_CSR_ENABLE_MASK       //使能 systick
+     51                           //| SysTick_CSR_TICKINT_MASK    //使能中断 (注释了表示关闭中断)
+     52                           | SysTick_CSR_CLKSOURCE_MASK    //时钟源选择 ( core clk)
+     53                         );
+   \   00000026   0x2005             MOVS     R0,#+5
+   \   00000028   0x....             LDR.N    R1,??DataTable3_3  ;; 0xe000e010
+   \   0000002A   0x6008             STR      R0,[R1, #+0]
+     54          
+     55              while( !(SYST_CSR & SysTick_CSR_COUNTFLAG_MASK));   //等待时间到
+   \                     ??systick_delay_3: (+1)
+   \   0000002C   0x....             LDR.N    R0,??DataTable3_3  ;; 0xe000e010
+   \   0000002E   0x6800             LDR      R0,[R0, #+0]
+   \   00000030   0x03C0             LSLS     R0,R0,#+15
+   \   00000032   0xD5FB             BPL.N    ??systick_delay_3
+     56          }
+   \                     ??systick_delay_0: (+1)
+   \   00000034   0xBD10             POP      {R4,PC}          ;; return
+     57          
+     58          /*!
+     59           *  @brief      SysTick延时函数
+     60           *  @param      ms          延时时间
+     61           *  @since      v5.0
+     62           *  Sample usage:       systick_delay_ms(32);     // systick 延时32 ms
+     63           */
+
+   \                                 In section .text, align 2, keep-with-next
+     64          void systick_delay_ms(uint32 ms)
+     65          {
+   \                     systick_delay_ms: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     66              while(ms--)
+   \                     ??systick_delay_ms_0: (+1)
+   \   00000004   0x0020             MOVS     R0,R4
+   \   00000006   0x1E44             SUBS     R4,R0,#+1
+   \   00000008   0x2800             CMP      R0,#+0
+   \   0000000A   0xD004             BEQ.N    ??systick_delay_ms_1
+     67              {
+     68                  systick_delay(SYSTICK_CLK_KHZ);
+   \   0000000C   0x....             LDR.N    R0,??DataTable3_6
+   \   0000000E   0x6800             LDR      R0,[R0, #+0]
+   \   00000010   0x.... 0x....      BL       systick_delay
+   \   00000014   0xE7F6             B.N      ??systick_delay_ms_0
+     69              }
+     70          }
+   \                     ??systick_delay_ms_1: (+1)
+   \   00000016   0xBD10             POP      {R4,PC}          ;; return
+     71          
+     72          /*!
+     73           *  @brief      SysTick定时函数
+     74           *  @param      time          定时时间(0~65535)
+     75           *  @since      v5.0
+     76           *  Sample usage:       systick_timing(32);     // systick 定时 32 个系统周期
+     77           */
+
+   \                                 In section .text, align 2, keep-with-next
+     78          void systick_timing(uint32 time)
+     79          {
+   \                     systick_timing: (+1)
+   \   00000000   0xB510             PUSH     {R4,LR}
+   \   00000002   0x0004             MOVS     R4,R0
+     80          
+     81              ASSERT(time <= (SysTick_RVR_RELOAD_MASK >> SysTick_RVR_RELOAD_SHIFT));  //24位
+   \   00000004   0xF1B4 0x7F80      CMP      R4,#+16777216
+   \   00000008   0xD303             BCC.N    ??systick_timing_0
+   \   0000000A   0x2151             MOVS     R1,#+81
+   \   0000000C   0x....             LDR.N    R0,??DataTable3_2
+   \   0000000E   0x.... 0x....      BL       assert_failed
+     82          
+     83              SYST_RVR = time;                        //设置延时时间
+   \                     ??systick_timing_0: (+1)
+   \   00000012   0x....             LDR.N    R0,??DataTable3_4  ;; 0xe000e014
+   \   00000014   0x6004             STR      R4,[R0, #+0]
+     84          
+     85              //设置优先级
+     86              NVIC_SetPriority (SysTick_IRQn, (1 << __NVIC_PRIO_BITS) - 1); /* set Priority for Cortex-M4 System Interrupts */
+   \   00000016   0x210F             MOVS     R1,#+15
+   \   00000018   0xF05F 0x30FF      MOVS     R0,#-1
+   \   0000001C   0x.... 0x....      BL       NVIC_SetPriority
+     87          
+     88              SYST_CVR = 0x00;                        //清空计数器
+   \   00000020   0x2000             MOVS     R0,#+0
+   \   00000022   0x....             LDR.N    R1,??DataTable3_5  ;; 0xe000e018
+   \   00000024   0x6008             STR      R0,[R1, #+0]
+     89          
+     90              SYST_CSR = ( 0
+     91                           | SysTick_CSR_ENABLE_MASK       //使能 systick
+     92                           | SysTick_CSR_TICKINT_MASK      //使能中断 (注释了表示关闭中断)
+     93                           | SysTick_CSR_CLKSOURCE_MASK    //时钟源选择 ( core clk)
+     94                         );
+   \   00000026   0x2007             MOVS     R0,#+7
+   \   00000028   0x....             LDR.N    R1,??DataTable3_3  ;; 0xe000e010
+   \   0000002A   0x6008             STR      R0,[R1, #+0]
+     95          }
+   \   0000002C   0xBD10             POP      {R4,PC}          ;; return
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3:
+   \   00000000   0xE000ED18         DC32     0xe000ed18
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3_1:
+   \   00000000   0xE000E400         DC32     0xe000e400
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3_2:
+   \   00000000   0x........         DC32     ?_0
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3_3:
+   \   00000000   0xE000E010         DC32     0xe000e010
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3_4:
+   \   00000000   0xE000E014         DC32     0xe000e014
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3_5:
+   \   00000000   0xE000E018         DC32     0xe000e018
+
+   \                                 In section .text, align 4, keep-with-next
+   \                     ??DataTable3_6:
+   \   00000000   0x........         DC32     core_clk_khz
+
+   \                                 In section .rodata, align 4
+   \                     ?_0:
+   \   00000000   0x44 0x3A          DC8 44H, 3AH, 5CH, 53H, 74H, 75H, 64H, 79H
+   \              0x5C 0x53    
+   \              0x74 0x75    
+   \              0x64 0x79    
+   \   00000008   0x5C 0x32          DC8 5CH, 32H, 30H, 31H, 36H, 0B5H, 0E7H, 0D7H
+   \              0x30 0x31    
+   \              0x36 0xB5    
+   \              0xE7 0xD7    
+   \   00000010   0xD3 0xC9          DC8 0D3H, 0C9H, 0E8H, 0BCH, 0C6H, 0B4H, 0F3H, 0C8H
+   \              0xE8 0xBC    
+   \              0xC6 0xB4    
+   \              0xF3 0xC8    
+   \   00000018   0xFC 0x5C          DC8 0FCH, 5CH, 54H, 69H, 5CH, 0B5H, 0E7H, 0C8H
+   \              0x54 0x69    
+   \              0x5C 0xB5    
+   \              0xE7 0xC8    
+   \   00000020   0xFC 0xB1          DC8 0FCH, 0B1H, 0B8H, 0D3H, 0C3H, 0B5H, 0D7H, 0B2H
+   \              0xB8 0xD3    
+   \              0xC3 0xB5    
+   \              0xD7 0xB2    
+   \   00000028   0xE3 0x5C          DC8 0E3H, 5CH, 43H, 68H, 69H, 70H, 5CH, 73H
+   \              0x43 0x68    
+   \              0x69 0x70    
+   \              0x5C 0x73    
+   \   00000030   0x72 0x63          DC8 72H, 63H, 5CH, 4DH, 4BH, 36H, 30H, 5FH
+   \              0x5C 0x4D    
+   \              0x4B 0x36    
+   \              0x30 0x5F    
+   \   00000038   0x53 0x79          DC8 53H, 79H, 73H, 54H, 69H, 63H, 6BH, 2EH
+   \              0x73 0x54    
+   \              0x69 0x63    
+   \              0x6B 0x2E    
+   \   00000040   0x63 0x00          DC8 63H, 0
+   \   00000042   0x00 0x00          DC8 0, 0
+     96          
+     97          
+     98          
+     99          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       4   NVIC_SetPriority
+       8   systick_delay
+         8   -> assert_failed
+       8   systick_delay_ms
+         8   -> systick_delay
+       8   systick_timing
+         8   -> NVIC_SetPriority
+         8   -> assert_failed
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable3
+       4  ??DataTable3_1
+       4  ??DataTable3_2
+       4  ??DataTable3_3
+       4  ??DataTable3_4
+       4  ??DataTable3_5
+       4  ??DataTable3_6
+      68  ?_0
+      38  NVIC_SetPriority
+      54  systick_delay
+      24  systick_delay_ms
+      46  systick_timing
+
+ 
+  68 bytes in section .rodata
+ 190 bytes in section .text
+ 
+ 190 bytes of CODE  memory
+  68 bytes of CONST memory
+
+Errors: none
+Warnings: none
